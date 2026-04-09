@@ -1,0 +1,129 @@
+.fin-dashboard__lead {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.fin-dashboard__filters {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  align-items: end;
+  margin-bottom: 0.25rem;
+}
+
+.fin-dashboard__filters-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+@media (min-width: 720px) {
+  .fin-dashboard__filters-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+.fin-dashboard__section-title {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.fin-dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.fin-dashboard-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.06),
+    0 4px 12px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 6.75rem;
+}
+
+.fin-dashboard-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.fin-dashboard-card__count {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-dashboard-card__amount {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-dashboard-card__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+}
+
+.fin-dashboard-card--pending {
+  border-color: #fed7aa;
+  background: linear-gradient(180deg, #fffbeb 0%, #fff 40%);
+}
+
+.fin-dashboard-card--pending .fin-dashboard-card__count {
+  color: #9a3412;
+}
+
+.fin-dashboard-card--overdue {
+  border-color: #fecaca;
+  background: linear-gradient(180deg, #fef2f2 0%, #fff 45%);
+}
+
+.fin-dashboard-card--overdue .fin-dashboard-card__count {
+  color: #991b1b;
+}
+
+.fin-dashboard-card--success {
+  border-color: #bbf7d0;
+  background: linear-gradient(180deg, #f0fdf4 0%, #fff 45%);
+}
+
+.fin-dashboard-card--success .fin-dashboard-card__count {
+  color: #166534;
+}
+
+.fin-dashboard-card--balance-positive .fin-dashboard-card__amount {
+  color: #15803d;
+}
+
+.fin-dashboard-card--balance-negative .fin-dashboard-card__amount {
+  color: #b91c1c;
+}
+
+.fin-dashboard-card--balance-neutral .fin-dashboard-card__amount {
+  color: #0f172a;
+}
+
+@media (max-width: 520px) {
+  .fin-dashboard__cards {
+    grid-template-columns: 1fr;
+  }
+}

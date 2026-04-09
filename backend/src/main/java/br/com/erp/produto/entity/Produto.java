@@ -1,5 +1,6 @@
 package br.com.erp.produto.entity;
 
+import br.com.erp.categoria.entity.Categoria;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,10 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
+
     @Column(nullable = false, unique = true, length = 50)
     private String codigo;
 
@@ -30,4 +35,10 @@ public class Produto {
 
     @Column(nullable = false)
     private Boolean ativo;
+
+    @Column(name = "saldo_estoque", nullable = false)
+    private Integer saldoEstoque = 0;
+
+    @Column(name = "estoque_minimo", nullable = false)
+    private Integer estoqueMinimo = 0;
 }

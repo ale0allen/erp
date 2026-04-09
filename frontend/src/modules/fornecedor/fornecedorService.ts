@@ -1,0 +1,53 @@
+import type { Fornecedor, FornecedorPayload } from './fornecedor.types'
+
+const API_BASE = 'http://localhost:8080/fornecedores'
+
+export async function fetchFornecedores(): Promise<Fornecedor[]> {
+  const response = await fetch(API_BASE)
+
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar fornecedores. Status: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+export async function criarFornecedor(payload: FornecedorPayload): Promise<Fornecedor> {
+  const response = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+
+  if (!response.ok) {
+    throw new Error(`Erro ao salvar fornecedor. Status: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+export async function atualizarFornecedor(
+  id: number,
+  payload: FornecedorPayload
+): Promise<Fornecedor> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+
+  if (!response.ok) {
+    throw new Error(`Erro ao atualizar fornecedor. Status: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+export async function removerFornecedor(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+
+  if (!response.ok) {
+    throw new Error(`Erro ao excluir fornecedor. Status: ${response.status}`)
+  }
+}
+

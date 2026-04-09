@@ -1,0 +1,2 @@
+ALTER TABLE produto ADD COLUMN estoque_minimo INTEGER NOT NULL DEFAULT 0;
+
