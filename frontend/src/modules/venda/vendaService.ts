@@ -62,7 +62,7 @@ export async function fetchVendaDetalhe(id: number): Promise<VendaDetail> {
 }
 
 export async function criarVenda(payload: VendaPayload): Promise<VendaDetail> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/vendas`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

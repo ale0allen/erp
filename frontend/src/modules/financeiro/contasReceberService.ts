@@ -59,7 +59,7 @@ export async function fetchContaReceber(id: number): Promise<ContaReceberDetail>
 }
 
 export async function criarContaReceber(payload: ContaReceberPayload): Promise<ContaReceberDetail> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/contas-receber`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

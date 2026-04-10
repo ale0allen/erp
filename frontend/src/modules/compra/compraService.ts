@@ -47,7 +47,7 @@ export async function fetchCompraDetalhe(id: number): Promise<CompraDetail> {
 }
 
 export async function criarCompra(payload: CompraPayload): Promise<CompraDetail> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/compras`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

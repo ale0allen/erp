@@ -15,7 +15,7 @@ export async function fetchClientes(): Promise<Cliente[]> {
 }
 
 export async function criarCliente(payload: ClientePayload): Promise<Cliente> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/clientes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

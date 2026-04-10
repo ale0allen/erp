@@ -14,7 +14,7 @@ export async function fetchFornecedores(): Promise<Fornecedor[]> {
 }
 
 export async function criarFornecedor(payload: FornecedorPayload): Promise<Fornecedor> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/fornecedores`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

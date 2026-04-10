@@ -15,7 +15,7 @@ export async function fetchCategorias(): Promise<Categoria[]> {
 }
 
 export async function criarCategoria(payload: CategoriaPayload): Promise<Categoria> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/categorias`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
