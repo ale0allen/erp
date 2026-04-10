@@ -37,7 +37,7 @@ export async function fetchRelatorioContasPagar(
   filtros: RelatorioFinanceiroFiltrosPagar = {}
 ): Promise<RelatorioContasPagarResponse> {
   const qs = paramsPagar(filtros).toString()
-  const url = qs ? `${API_PAGAR}?${qs}` : API_PAGAR
+  const url = qs ? `${API_PAGAR}/financeiro/relatorios/contas-pagar?${qs}` : `${API_PAGAR}/financeiro/relatorios/contas-pagar`
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Erro ao carregar relatório de contas a pagar. Status: ${response.status}`)
@@ -49,7 +49,7 @@ export async function fetchRelatorioContasReceber(
   filtros: RelatorioFinanceiroFiltrosReceber = {}
 ): Promise<RelatorioContasReceberResponse> {
   const qs = paramsReceber(filtros).toString()
-  const url = qs ? `${API_RECEBER}?${qs}` : API_RECEBER
+  const url = qs ? `${API_RECEBER}/financeiro/relatorios/contas-receber?${qs}` : `${API_RECEBER}/financeiro/relatorios/contas-receber`
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Erro ao carregar relatório de contas a receber. Status: ${response.status}`)

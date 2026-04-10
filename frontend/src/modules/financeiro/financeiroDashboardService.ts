@@ -12,7 +12,7 @@ export async function fetchFinanceiroDashboard(
   if (filtros.endDate) params.set('endDate', filtros.endDate)
 
   const qs = params.toString()
-  const url = qs ? `${API_URL}?${qs}` : API_URL
+  const url = qs ? `${API_URL}/financeiro/dashboard?${qs}` : `${API_URL}/financeiro/dashboard`
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Erro ao carregar dashboard financeiro. Status: ${response.status}`)

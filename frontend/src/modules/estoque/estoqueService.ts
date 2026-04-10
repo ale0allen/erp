@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.VITE_API_URL
 fetch(`${API_BASE}/movimentacoes-estoque`)
 
 export async function fetchMovimentacoes(): Promise<MovimentacaoEstoque[]> {
-  const response = await fetch(API_BASE)
+  const response = await fetch(`${API_BASE}/movimentacoes-estoque`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar movimentações. Status: ${response.status}`)
@@ -20,7 +20,7 @@ export async function fetchMovimentacoes(): Promise<MovimentacaoEstoque[]> {
 export async function registrarMovimentacao(
   payload: MovimentacaoEstoquePayload
 ): Promise<MovimentacaoEstoque> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_BASE}/movimentacoes-estoque`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
