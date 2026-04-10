@@ -41,7 +41,7 @@ export async function fetchContasReceber(
 
   const qs = params.toString()
   const url = qs ? `${API_BASE}/contas-receber?${qs}` : `${API_BASE}/contas-receber`
-  const response = await fetch(`${API_BASE}/contas-receber` + qs)
+  const response = await fetch(url)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar contas a receber. Status: ${response.status}`)

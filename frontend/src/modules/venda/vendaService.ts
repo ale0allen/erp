@@ -43,7 +43,7 @@ export async function fetchVendas(filtros: VendaListFiltros = {}): Promise<Venda
 
   const qs = params.toString()
   const url = qs ? `${API_BASE}/vendas?${qs}` : `${API_BASE}/vendas`
-  const response = await fetch(`${API_BASE}/vendas` + qs)
+  const response = await fetch(url)
 
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
@@ -53,7 +53,7 @@ export async function fetchVendas(filtros: VendaListFiltros = {}): Promise<Venda
 }
 
 export async function fetchVendaDetalhe(id: number): Promise<VendaDetail> {
-  const response = await fetch(`${API_BASE}/vendas/${id}`)
+  const response = await fetch(`${API_BASE}/vendas/ ${id}`)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar venda. Status: ${response.status}`)
