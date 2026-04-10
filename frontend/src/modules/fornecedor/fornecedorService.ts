@@ -31,7 +31,7 @@ export async function atualizarFornecedor(
   id: number,
   payload: FornecedorPayload
 ): Promise<Fornecedor> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/fornecedores/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -45,7 +45,7 @@ export async function atualizarFornecedor(
 }
 
 export async function removerFornecedor(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+  const response = await fetch(`${API_BASE}/fornecedores/${id}`, { method: 'DELETE' })
 
   if (!response.ok) {
     throw new Error(`Erro ao excluir fornecedor. Status: ${response.status}`)

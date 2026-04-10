@@ -32,7 +32,7 @@ export async function atualizarCategoria(
   id: number,
   payload: CategoriaPayload
 ): Promise<Categoria> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/categorias/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -46,7 +46,7 @@ export async function atualizarCategoria(
 }
 
 export async function removerCategoria(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+  const response = await fetch(`${API_BASE}/categorias/${id}`, { method: 'DELETE' })
 
   if (!response.ok) {
     throw new Error(`Erro ao excluir categoria. Status: ${response.status}`)

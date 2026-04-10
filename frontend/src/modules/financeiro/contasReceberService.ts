@@ -40,8 +40,8 @@ export async function fetchContasReceber(
   if (filtros.description?.trim()) params.set('description', filtros.description.trim())
 
   const qs = params.toString()
-  const url = qs ? `${API_BASE}?${qs}` : API_BASE
-  const response = await fetch(url)
+  const url = qs ? `${API_BASE}/contas-receber?${qs}` : `${API_BASE}/contas-receber`
+  const response = await fetch(`${API_BASE}/contas-receber` + qs)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar contas a receber. Status: ${response.status}`)
@@ -50,7 +50,7 @@ export async function fetchContasReceber(
 }
 
 export async function fetchContaReceber(id: number): Promise<ContaReceberDetail> {
-  const response = await fetch(`${API_BASE}/${id}`)
+  const response = await fetch(`${API_BASE}/contas-receber/${id}`)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar conta a receber. Status: ${response.status}`)
@@ -75,7 +75,7 @@ export async function atualizarContaReceber(
   id: number,
   payload: ContaReceberPayload
 ): Promise<ContaReceberDetail> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/contas-receber/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -88,7 +88,7 @@ export async function atualizarContaReceber(
 }
 
 export async function receberContaReceber(id: number): Promise<ContaReceberDetail> {
-  const response = await fetch(`${API_BASE}/${id}/receber`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/contas-receber/${id}/receber`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao marcar conta como recebida. Status: ${response.status}`)
@@ -97,7 +97,7 @@ export async function receberContaReceber(id: number): Promise<ContaReceberDetai
 }
 
 export async function cancelarContaReceber(id: number): Promise<ContaReceberDetail> {
-  const response = await fetch(`${API_BASE}/${id}/cancelar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/contas-receber/${id}/cancelar`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao cancelar conta a receber. Status: ${response.status}`)

@@ -22,9 +22,9 @@ export async function fetchRelatorioEstoque(
   }
 
   const qs = params.toString()
-  const url = qs ? `${API_BASE}?${qs}` : API_BASE
+  const url = qs ? `${API_BASE}/produtos/relatorio-estoque?${qs}` : `${API_BASE}/produtos/relatorio-estoque`
 
-  const response = await fetch(url)
+  const response = await fetch(`${API_BASE}/produtos/relatorio-estoque` + qs)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar relatório de estoque. Status: ${response.status}`)

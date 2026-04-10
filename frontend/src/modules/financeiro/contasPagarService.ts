@@ -40,7 +40,7 @@ export async function fetchContasPagar(
   if (filtros.description?.trim()) params.set('description', filtros.description.trim())
 
   const qs = params.toString()
-  const url = qs ? `${API_BASE}?${qs}` : API_BASE
+  const url = qs ? `${API_BASE}/contas-pagar?${qs}` : `${API_BASE}/contas-pagar`
   const response = await fetch(url)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
@@ -50,7 +50,7 @@ export async function fetchContasPagar(
 }
 
 export async function fetchContaPagar(id: number): Promise<ContaPagarDetail> {
-  const response = await fetch(`${API_BASE}/${id}`)
+  const response = await fetch(`${API_BASE}/contas-pagar/${id}`)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar conta a pagar. Status: ${response.status}`)
@@ -75,7 +75,7 @@ export async function atualizarContaPagar(
   id: number,
   payload: ContaPagarPayload
 ): Promise<ContaPagarDetail> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/contas-pagar/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -88,7 +88,7 @@ export async function atualizarContaPagar(
 }
 
 export async function pagarContaPagar(id: number): Promise<ContaPagarDetail> {
-  const response = await fetch(`${API_BASE}/${id}/pagar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/contas-pagar/${id}/pagar`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao pagar conta a pagar. Status: ${response.status}`)
@@ -97,7 +97,7 @@ export async function pagarContaPagar(id: number): Promise<ContaPagarDetail> {
 }
 
 export async function cancelarContaPagar(id: number): Promise<ContaPagarDetail> {
-  const response = await fetch(`${API_BASE}/${id}/cancelar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/contas-pagar/${id}/cancelar`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao cancelar conta a pagar. Status: ${response.status}`)

@@ -29,7 +29,7 @@ export async function fetchCompras(
   }
 
   const qs = params.toString()
-  const url = qs ? `${API_BASE}?${qs}` : API_BASE
+  const url = qs ? `${API_BASE}/compras?${qs}` : `${API_BASE}/compras`
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -39,7 +39,7 @@ export async function fetchCompras(
 }
 
 export async function fetchCompraDetalhe(id: number): Promise<CompraDetail> {
-  const response = await fetch(`${API_BASE}/${id}`)
+  const response = await fetch(`${API_BASE}/compras/${id}`)
   if (!response.ok) {
     throw new Error(`Erro ao buscar compra. Status: ${response.status}`)
   }
@@ -62,7 +62,7 @@ export async function atualizarCompra(
   id: number,
   payload: CompraPayload
 ): Promise<CompraDetail> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/compras/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -74,7 +74,7 @@ export async function atualizarCompra(
 }
 
 export async function cancelarCompra(id: number): Promise<CompraDetail> {
-  const response = await fetch(`${API_BASE}/${id}/cancelar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/compras/${id}/cancelar`, { method: 'POST' })
   if (!response.ok) {
     throw new Error(`Erro ao cancelar compra. Status: ${response.status}`)
   }
@@ -82,7 +82,7 @@ export async function cancelarCompra(id: number): Promise<CompraDetail> {
 }
 
 export async function finalizarCompra(id: number): Promise<CompraDetail> {
-  const response = await fetch(`${API_BASE}/${id}/finalizar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/compras/${id}/finalizar`, { method: 'POST' })
   if (!response.ok) {
     throw new Error(`Erro ao finalizar compra. Status: ${response.status}`)
   }

@@ -32,7 +32,7 @@ export async function atualizarCliente(
   id: number,
   payload: ClientePayload
 ): Promise<Cliente> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/clientes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -46,7 +46,7 @@ export async function atualizarCliente(
 }
 
 export async function removerCliente(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+  const response = await fetch(`${API_BASE}/clientes/${id}`, { method: 'DELETE' })
 
   if (!response.ok) {
     throw new Error(`Erro ao excluir cliente. Status: ${response.status}`)

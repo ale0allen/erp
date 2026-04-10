@@ -42,8 +42,8 @@ export async function fetchVendas(filtros: VendaListFiltros = {}): Promise<Venda
   if (filtros.endDate) params.set('endDate', filtros.endDate)
 
   const qs = params.toString()
-  const url = qs ? `${API_BASE}?${qs}` : API_BASE
-  const response = await fetch(url)
+  const url = qs ? `${API_BASE}/vendas?${qs}` : `${API_BASE}/vendas`
+  const response = await fetch(`${API_BASE}/vendas` + qs)
 
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
@@ -53,7 +53,7 @@ export async function fetchVendas(filtros: VendaListFiltros = {}): Promise<Venda
 }
 
 export async function fetchVendaDetalhe(id: number): Promise<VendaDetail> {
-  const response = await fetch(`${API_BASE}/${id}`)
+  const response = await fetch(`${API_BASE}/vendas/${id}`)
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao buscar venda. Status: ${response.status}`)
@@ -75,7 +75,7 @@ export async function criarVenda(payload: VendaPayload): Promise<VendaDetail> {
 }
 
 export async function atualizarVenda(id: number, payload: VendaPayload): Promise<VendaDetail> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/vendas/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -88,7 +88,7 @@ export async function atualizarVenda(id: number, payload: VendaPayload): Promise
 }
 
 export async function cancelarVenda(id: number): Promise<VendaDetail> {
-  const response = await fetch(`${API_BASE}/${id}/cancelar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/vendas/${id}/cancelar`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao cancelar venda. Status: ${response.status}`)
@@ -97,7 +97,7 @@ export async function cancelarVenda(id: number): Promise<VendaDetail> {
 }
 
 export async function finalizarVenda(id: number): Promise<VendaDetail> {
-  const response = await fetch(`${API_BASE}/${id}/finalizar`, { method: 'POST' })
+  const response = await fetch(`${API_BASE}/vendas/${id}/finalizar`, { method: 'POST' })
   if (!response.ok) {
     const msg = await extractApiErrorMessage(response)
     throw new Error(msg ?? `Erro ao finalizar venda. Status: ${response.status}`)

@@ -25,7 +25,7 @@ export async function fetchProdutos(): Promise<Produto[]> {
 }
 
 export async function criarProduto(produto: ProdutoPayload): Promise<Produto> {
-  const url = API_BASE
+  const url = `${API_BASE}/produtos`
   console.log('POST', url, 'body:', produto)
 
   const response = await fetch(url, {
@@ -51,7 +51,7 @@ export async function atualizarProduto(
   id: number,
   produto: ProdutoPayload
 ): Promise<Produto> {
-  const url = `${API_BASE}/${id}`
+  const url = `${API_BASE}/produtos/${id}`
   console.log('PUT', url, 'body:', produto)
 
   const response = await fetch(url, {
@@ -74,7 +74,7 @@ export async function atualizarProduto(
 }
 
 export async function removerProduto(id: number): Promise<void> {
-  const url = `${API_BASE}/${id}`
+  const url = `${API_BASE}/produtos/${id}`
   console.log('DELETE', url)
 
   const response = await fetch(url, { method: 'DELETE' })
