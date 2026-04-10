@@ -1,6 +1,7 @@
 import type { RelatorioEstoqueFiltros, RelatorioEstoqueItem } from './relatorioEstoque.types'
 
-const API_BASE = 'http://localhost:8080/produtos/relatorio-estoque'
+const API_BASE = import.meta.env.VITE_API_URL
+fetch(`${API_BASE}/produtos/relatorio-estoque`)
 
 export async function fetchRelatorioEstoque(
   filtros: RelatorioEstoqueFiltros = {}

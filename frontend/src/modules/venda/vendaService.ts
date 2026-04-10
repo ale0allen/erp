@@ -1,6 +1,7 @@
 import type { StatusVenda, VendaDetail, VendaListItem, VendaPayload } from './venda.types'
 
-const API_BASE = 'http://localhost:8080/vendas'
+const API_BASE = import.meta.env.VITE_API_URL
+fetch(`${API_BASE}/vendas`)
 
 async function extractApiErrorMessage(response: Response): Promise<string | null> {
   try {

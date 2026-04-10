@@ -1,6 +1,8 @@
 import type { Categoria, CategoriaPayload } from './categoria.types'
 
-const API_BASE = 'http://localhost:8080/categorias'
+const API_BASE = import.meta.env.VITE_API_URL
+
+fetch(`${API_BASE}/categorias`)
 
 export async function fetchCategorias(): Promise<Categoria[]> {
   const response = await fetch(API_BASE)

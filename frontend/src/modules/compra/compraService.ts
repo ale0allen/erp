@@ -1,6 +1,8 @@
 import type { CompraDetail, CompraListItem, CompraPayload, StatusCompra } from './compra.types'
 
-const API_BASE = 'http://localhost:8080/compras'
+const API_BASE = import.meta.env.VITE_API_URL
+
+fetch(`${API_BASE}/compras`)
 
 export type CompraListFiltros = {
   fornecedorId?: number

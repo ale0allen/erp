@@ -1,6 +1,8 @@
 import type { FinanceiroDashboardFiltros, FinanceiroDashboardResumo } from './financeiroDashboard.types'
 
-const API_URL = 'http://localhost:8080/financeiro/dashboard'
+const API_URL = import.meta.env.VITE_API_URL
+
+fetch(`${API_URL}/financeiro/dashboard`)
 
 export async function fetchFinanceiroDashboard(
   filtros: FinanceiroDashboardFiltros = {}

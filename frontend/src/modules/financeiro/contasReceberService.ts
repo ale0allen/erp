@@ -5,7 +5,9 @@ import type {
   ContasReceberFiltros
 } from './contasReceber.types'
 
-const API_BASE = 'http://localhost:8080/contas-receber'
+const API_BASE = import.meta.env.VITE_API_URL
+
+fetch(`${API_BASE}/contas-receber`)
 
 async function extractApiErrorMessage(response: Response): Promise<string | null> {
   try {

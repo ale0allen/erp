@@ -5,8 +5,13 @@ import type {
   RelatorioFinanceiroFiltrosReceber
 } from './relatorioFinanceiro.types'
 
-const API_PAGAR = 'http://localhost:8080/financeiro/relatorios/contas-pagar'
-const API_RECEBER = 'http://localhost:8080/financeiro/relatorios/contas-receber'
+const API_PAGAR = import.meta.env.VITE_API_URL
+
+fetch(`${API_PAGAR}/financeiro/relatorios/contas-pagar`)
+
+const API_RECEBER = import.meta.env.VITE_API_URL
+
+fetch(`${API_RECEBER}/financeiro/relatorios/contas-receber`)
 
 function paramsPagar(f: RelatorioFinanceiroFiltrosPagar): URLSearchParams {
   const params = new URLSearchParams()

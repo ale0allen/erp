@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://erp-six-omega.vercel.app")
 @RestController
 @RequestMapping("/financeiro")
 public class FinanceiroDashboardController {

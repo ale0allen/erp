@@ -3,7 +3,9 @@ import type {
   MovimentacaoEstoquePayload
 } from './movimentacaoEstoque.types'
 
-const API_BASE = 'http://localhost:8080/movimentacoes-estoque'
+const API_BASE = import.meta.env.VITE_API_URL
+
+fetch(`${API_BASE}/movimentacoes-estoque`)
 
 export async function fetchMovimentacoes(): Promise<MovimentacaoEstoque[]> {
   const response = await fetch(API_BASE)
