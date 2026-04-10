@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_URL
 fetch(`${API_BASE}/produtos`)
 
 export async function fetchProdutoResumo(): Promise<ProdutoResumo> {
-  const response = await fetch(`${API_BASE}/resumo`)
+  const response = await fetch(`${API_BASE}/produtos/resumo`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar resumo de produtos. Status: ${response.status}`)
