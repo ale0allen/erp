@@ -13,7 +13,7 @@ export async function fetchRelatorioEstoque(
   if (filtros.categoryId != null) {
     params.set('categoryId', String(filtros.categoryId))
   }
-  if (filtros.stockStatus && filtros.stockStatus !== '') {
+  if (filtros.stockStatus) {
     params.set('stockStatus', filtros.stockStatus)
   }
   if (filtros.active === true || filtros.active === false) {
