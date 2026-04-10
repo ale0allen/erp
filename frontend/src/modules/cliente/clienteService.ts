@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_URL
 fetch(`${API_BASE}/clientes`)
 
 export async function fetchClientes(): Promise<Cliente[]> {
-  const response = await fetch(API_BASE)
+  const response = await fetch(`${API_BASE}/clientes`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar clientes. Status: ${response.status}`)

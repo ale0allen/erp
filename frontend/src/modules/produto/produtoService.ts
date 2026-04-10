@@ -14,7 +14,7 @@ export async function fetchProdutoResumo(): Promise<ProdutoResumo> {
 }
 
 export async function fetchProdutos(): Promise<Produto[]> {
-  const response = await fetch(API_BASE)
+  const response = await fetch(`${API_BASE}/produtos`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar produtos. Status: ${response.status}`)

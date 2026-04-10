@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_URL
 fetch(`${API_BASE}/categorias`)
 
 export async function fetchCategorias(): Promise<Categoria[]> {
-  const response = await fetch(API_BASE)
+  const response = await fetch(`${API_BASE}/categorias`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar categorias. Status: ${response.status}`)
