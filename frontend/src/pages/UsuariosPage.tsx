@@ -51,11 +51,11 @@ export function UsuariosPage() {
         fetchUsuarios({ page: pageIndex, size: PAGE_SIZE }),
         fetchPerfisDisponiveis()
       ])
-      setUsuarios(Array.isArray(res.content) ? res.content : [])
+      setUsuarios(res.content)
       setPage(typeof res.page === 'number' ? res.page : pageIndex)
       setTotalPages(typeof res.totalPages === 'number' ? res.totalPages : 0)
       setTotalElements(typeof res.totalElements === 'number' ? res.totalElements : 0)
-      setOpcoesPerfil(Array.isArray(perfis) ? perfis : [])
+      setOpcoesPerfil(perfis)
       setMensagem('')
     } catch (e) {
       console.error(e)
@@ -333,7 +333,7 @@ export function UsuariosPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(Array.isArray(usuarios) ? usuarios : []).map(u => (
+                  {usuarios.map(u => (
                     <tr key={u.id}>
                       <td>{u.nome}</td>
                       <td>{u.email}</td>
@@ -350,9 +350,7 @@ export function UsuariosPage() {
                         </span>
                       </td>
                       <td>
-                        {!Array.isArray(u.perfis) || u.perfis.length === 0
-                          ? '—'
-                          : u.perfis.map(perfilLabel).join(', ')}
+                        {u.perfis.length === 0 ? '—' : u.perfis.map(perfilLabel).join(', ')}
                       </td>
                       <td>{formatarDataHora(u.auditoria?.criadoEm)}</td>
                       <td>

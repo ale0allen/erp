@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type { Categoria, CategoriaPayload } from './categoria.types'
 
@@ -7,7 +8,8 @@ const API_BASE = import.meta.env.VITE_API_URL
 export async function fetchCategorias(): Promise<Categoria[]> {
   const response = await apiFetch(`${API_BASE}/categorias`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<Categoria>(data, 'fetchCategorias')
 }
 
 export async function criarCategoria(payload: CategoriaPayload): Promise<Categoria> {

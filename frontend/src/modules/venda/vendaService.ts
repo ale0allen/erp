@@ -1,6 +1,7 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
-import type { StatusVenda, VendaDetail, VendaListItem, VendaPayload } from './venda.types'
+import type { StatusVenda, VendaDetail, VendaItem, VendaListItem, VendaPayload } from './venda.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -22,13 +23,27 @@ export async function fetchVendas(filtros: VendaListFiltros = {}): Promise<Venda
   const url = qs ? `${API_BASE}/vendas?${qs}` : `${API_BASE}/vendas`
   const response = await apiFetch(url)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<VendaListItem>(data, 'fetchVendas')
+}
+
+function normalizeVendaDetail(raw: unknown): VendaDetail {
+  if (!raw || typeof raw !== 'object') {
+    console.error('[fetchVendaDetalhe] Invalid response:', raw)
+    throw new Error('Resposta inválida ao carregar venda.')
+  }
+  const o = raw as Record<string, unknown> & VendaDetail
+  const itens = Array.isArray(o.itens)
+    ? (o.itens as VendaItem[])
+    : (console.error('[fetchVendaDetalhe] itens is not an array:', o.itens), [])
+  return { ...o, itens }
 }
 
 export async function fetchVendaDetalhe(id: number): Promise<VendaDetail> {
   const response = await apiFetch(`${API_BASE}/vendas/${id}`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return normalizeVendaDetail(data)
 }
 
 export async function criarVenda(payload: VendaPayload): Promise<VendaDetail> {

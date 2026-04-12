@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi, asStringArray, parseSpringPage } from '../../utils/apiArray'
 
 import type {
   PageResponse,
@@ -19,7 +20,7 @@ export async function fetchPerfisDisponiveis(): Promise<PerfilOption[]> {
   const response = await apiFetch(`${API_BASE}/perfis`)
   await ensureOk(response)
   const data: unknown = await response.json()
-  return Array.isArray(data) ? data : []
+  return asArrayFromApi<PerfilOption>(data, 'fetchPerfisDisponiveis')
 }
 
 /** GET /usuarios — resposta paginada (`content`, `page`, `totalPages`, …). */
@@ -35,7 +36,15 @@ export async function fetchUsuarios(
   })
   const response = await apiFetch(`${API_BASE}/usuarios?${search.toString()}`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  const pageRes = parseSpringPage<UsuarioAdmin>(data, 'fetchUsuarios')
+  return {
+    ...pageRes,
+    content: pageRes.content.map((u: UsuarioAdmin, i: number) => ({
+      ...u,
+      perfis: asStringArray(u.perfis, `fetchUsuarios content[${i}]`)
+    }))
+  }
 }
 
 /**
@@ -43,7 +52,7 @@ export async function fetchUsuarios(
  */
 export async function fetchUsuariosParaSelect(): Promise<UsuarioAdmin[]> {
   const res = await fetchUsuarios({ page: 0, size: 500 })
-  return Array.isArray(res.content) ? res.content : []
+  return res.content
 }
 
 export async function fetchUsuario(id: number): Promise<UsuarioAdmin> {

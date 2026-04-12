@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type { Produto, ProdutoPayload, ProdutoResumo } from './produto.types'
 
@@ -13,7 +14,8 @@ export async function fetchProdutoResumo(): Promise<ProdutoResumo> {
 export async function fetchProdutos(): Promise<Produto[]> {
   const response = await apiFetch(`${API_BASE}/produtos`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<Produto>(data, 'fetchProdutos')
 }
 
 export async function criarProduto(produto: ProdutoPayload): Promise<Produto> {

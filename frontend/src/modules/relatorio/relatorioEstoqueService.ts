@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type { RelatorioEstoqueFiltros, RelatorioEstoqueItem } from './relatorioEstoque.types'
 
@@ -27,5 +28,6 @@ export async function fetchRelatorioEstoque(
 
   const response = await apiFetch(url)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<RelatorioEstoqueItem>(data, 'fetchRelatorioEstoque')
 }

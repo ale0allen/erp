@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type {
   ContaPagarDetail,
@@ -23,7 +24,8 @@ export async function fetchContasPagar(
   const url = qs ? `${API_BASE}/contas-pagar?${qs}` : `${API_BASE}/contas-pagar`
   const response = await apiFetch(url)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<ContaPagarListItem>(data, 'fetchContasPagar')
 }
 
 export async function fetchContaPagar(id: number): Promise<ContaPagarDetail> {

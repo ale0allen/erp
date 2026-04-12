@@ -44,7 +44,7 @@ export function AuditoriaHistoricoPage() {
   const carregarUsuarios = useCallback(async () => {
     try {
       const lista = await fetchUsuariosParaSelect()
-      setUsuarios(Array.isArray(lista) ? lista : [])
+      setUsuarios(lista)
     } catch (e) {
       console.error(e)
       setUsuarios([])
@@ -130,7 +130,7 @@ export function AuditoriaHistoricoPage() {
                   }
                 >
                   <option value="">Todos</option>
-                  {(Array.isArray(usuarios) ? usuarios : []).map(u => (
+                  {usuarios.map(u => (
                     <option key={u.id} value={u.id}>
                       {u.nome} ({u.email})
                     </option>

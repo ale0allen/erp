@@ -52,6 +52,7 @@ export async function fetchHistoricoAuditoria(
 /** Aceita `PageResponse` (`page`) ou formato legado Spring (`number`). */
 function normalizePageHistorico(raw: unknown): PageHistoricoAuditoria {
   if (!raw || typeof raw !== 'object') {
+    console.error('[fetchHistoricoAuditoria] Invalid page response:', raw)
     return {
       content: [],
       page: 0,
@@ -62,7 +63,9 @@ function normalizePageHistorico(raw: unknown): PageHistoricoAuditoria {
     }
   }
   const o = raw as Record<string, unknown>
-  const content = Array.isArray(o.content) ? o.content : []
+  const content = Array.isArray(o.content)
+    ? o.content
+    : (console.error('[fetchHistoricoAuditoria] content is not an array:', o.content), [])
   const page =
     typeof o.page === 'number'
       ? o.page

@@ -1,6 +1,13 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
-import type { CompraDetail, CompraListItem, CompraPayload, StatusCompra } from './compra.types'
+import type {
+  CompraDetail,
+  CompraItem,
+  CompraListItem,
+  CompraPayload,
+  StatusCompra
+} from './compra.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -32,13 +39,27 @@ export async function fetchCompras(
   const url = qs ? `${API_BASE}/compras?${qs}` : `${API_BASE}/compras`
   const response = await apiFetch(url)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<CompraListItem>(data, 'fetchCompras')
+}
+
+function normalizeCompraDetail(raw: unknown): CompraDetail {
+  if (!raw || typeof raw !== 'object') {
+    console.error('[fetchCompraDetalhe] Invalid response:', raw)
+    throw new Error('Resposta inválida ao carregar compra.')
+  }
+  const o = raw as Record<string, unknown> & CompraDetail
+  const itens = Array.isArray(o.itens)
+    ? (o.itens as CompraItem[])
+    : (console.error('[fetchCompraDetalhe] itens is not an array:', o.itens), [])
+  return { ...o, itens }
 }
 
 export async function fetchCompraDetalhe(id: number): Promise<CompraDetail> {
   const response = await apiFetch(`${API_BASE}/compras/${id}`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return normalizeCompraDetail(data)
 }
 
 export async function criarCompra(payload: CompraPayload): Promise<CompraDetail> {

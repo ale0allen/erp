@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type {
   MovimentacaoEstoque,
@@ -10,7 +11,8 @@ const API_BASE = import.meta.env.VITE_API_URL
 export async function fetchMovimentacoes(): Promise<MovimentacaoEstoque[]> {
   const response = await apiFetch(`${API_BASE}/movimentacoes-estoque`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<MovimentacaoEstoque>(data, 'fetchMovimentacoes')
 }
 
 export async function registrarMovimentacao(

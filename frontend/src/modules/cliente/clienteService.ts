@@ -1,4 +1,5 @@
 import { apiFetch, ensureOk } from '../../api/http'
+import { asArrayFromApi } from '../../utils/apiArray'
 
 import type { Cliente, ClientePayload } from './cliente.types'
 
@@ -7,7 +8,8 @@ const API_BASE = import.meta.env.VITE_API_URL
 export async function fetchClientes(): Promise<Cliente[]> {
   const response = await apiFetch(`${API_BASE}/clientes`)
   await ensureOk(response)
-  return response.json()
+  const data: unknown = await response.json()
+  return asArrayFromApi<Cliente>(data, 'fetchClientes')
 }
 
 export async function criarCliente(payload: ClientePayload): Promise<Cliente> {
