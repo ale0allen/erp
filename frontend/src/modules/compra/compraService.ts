@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type { CompraDetail, CompraListItem, CompraPayload, StatusCompra } from './compra.types'
 
@@ -31,18 +31,13 @@ export async function fetchCompras(
   const qs = params.toString()
   const url = qs ? `${API_BASE}/compras?${qs}` : `${API_BASE}/compras`
   const response = await apiFetch(url)
-
-  if (!response.ok) {
-    throw new Error(`Erro ao buscar compras. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function fetchCompraDetalhe(id: number): Promise<CompraDetail> {
   const response = await apiFetch(`${API_BASE}/compras/${id}`)
-  if (!response.ok) {
-    throw new Error(`Erro ao buscar compra. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -52,9 +47,7 @@ export async function criarCompra(payload: CompraPayload): Promise<CompraDetail>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    throw new Error(`Erro ao criar compra. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -67,25 +60,18 @@ export async function atualizarCompra(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    throw new Error(`Erro ao atualizar compra. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function cancelarCompra(id: number): Promise<CompraDetail> {
   const response = await apiFetch(`${API_BASE}/compras/${id}/cancelar`, { method: 'POST' })
-  if (!response.ok) {
-    throw new Error(`Erro ao cancelar compra. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function finalizarCompra(id: number): Promise<CompraDetail> {
   const response = await apiFetch(`${API_BASE}/compras/${id}/finalizar`, { method: 'POST' })
-  if (!response.ok) {
-    throw new Error(`Erro ao finalizar compra. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
-

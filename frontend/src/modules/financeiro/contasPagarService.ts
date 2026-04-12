@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type {
   ContaPagarDetail,
@@ -8,26 +8,6 @@ import type {
 } from './contasPagar.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-
-async function extractApiErrorMessage(response: Response): Promise<string | null> {
-  try {
-    const data = await response.json()
-    if (data && typeof data === 'object') {
-      const msg = (data as { message?: unknown }).message
-      if (typeof msg === 'string' && msg.trim()) return msg
-      const err = (data as { erro?: unknown }).erro
-      if (typeof err === 'string' && err.trim()) return err
-    }
-  } catch {
-    // ignore
-  }
-  try {
-    const text = await response.text()
-    return text.trim() ? text : null
-  } catch {
-    return null
-  }
-}
 
 export async function fetchContasPagar(
   filtros: ContasPagarFiltros = {}
@@ -42,19 +22,13 @@ export async function fetchContasPagar(
   const qs = params.toString()
   const url = qs ? `${API_BASE}/contas-pagar?${qs}` : `${API_BASE}/contas-pagar`
   const response = await apiFetch(url)
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao buscar contas a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function fetchContaPagar(id: number): Promise<ContaPagarDetail> {
   const response = await apiFetch(`${API_BASE}/contas-pagar/${id}`)
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao buscar conta a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -64,10 +38,7 @@ export async function criarContaPagar(payload: ContaPagarPayload): Promise<Conta
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao criar conta a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -80,28 +51,18 @@ export async function atualizarContaPagar(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao atualizar conta a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function pagarContaPagar(id: number): Promise<ContaPagarDetail> {
   const response = await apiFetch(`${API_BASE}/contas-pagar/${id}/pagar`, { method: 'POST' })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao pagar conta a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function cancelarContaPagar(id: number): Promise<ContaPagarDetail> {
   const response = await apiFetch(`${API_BASE}/contas-pagar/${id}/cancelar`, { method: 'POST' })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao cancelar conta a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
-

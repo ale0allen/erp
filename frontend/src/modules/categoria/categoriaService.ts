@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type { Categoria, CategoriaPayload } from './categoria.types'
 
@@ -6,11 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL
 
 export async function fetchCategorias(): Promise<Categoria[]> {
   const response = await apiFetch(`${API_BASE}/categorias`)
-
-  if (!response.ok) {
-    throw new Error(`Erro ao buscar categorias. Status: ${response.status}`)
-  }
-
+  await ensureOk(response)
   return response.json()
 }
 
@@ -20,11 +16,7 @@ export async function criarCategoria(payload: CategoriaPayload): Promise<Categor
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-
-  if (!response.ok) {
-    throw new Error(`Erro ao salvar categoria. Status: ${response.status}`)
-  }
-
+  await ensureOk(response)
   return response.json()
 }
 
@@ -37,18 +29,11 @@ export async function atualizarCategoria(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-
-  if (!response.ok) {
-    throw new Error(`Erro ao atualizar categoria. Status: ${response.status}`)
-  }
-
+  await ensureOk(response)
   return response.json()
 }
 
 export async function removerCategoria(id: number): Promise<void> {
   const response = await apiFetch(`${API_BASE}/categorias/${id}`, { method: 'DELETE' })
-
-  if (!response.ok) {
-    throw new Error(`Erro ao excluir categoria. Status: ${response.status}`)
-  }
+  await ensureOk(response)
 }

@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type {
   ContaReceberDetail,
@@ -8,26 +8,6 @@ import type {
 } from './contasReceber.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-
-async function extractApiErrorMessage(response: Response): Promise<string | null> {
-  try {
-    const data = await response.json()
-    if (data && typeof data === 'object') {
-      const msg = (data as { message?: unknown }).message
-      if (typeof msg === 'string' && msg.trim()) return msg
-      const err = (data as { erro?: unknown }).erro
-      if (typeof err === 'string' && err.trim()) return err
-    }
-  } catch {
-    // ignore
-  }
-  try {
-    const text = await response.text()
-    return text.trim() ? text : null
-  } catch {
-    return null
-  }
-}
 
 export async function fetchContasReceber(
   filtros: ContasReceberFiltros = {}
@@ -42,19 +22,13 @@ export async function fetchContasReceber(
   const qs = params.toString()
   const url = qs ? `${API_BASE}/contas-receber?${qs}` : `${API_BASE}/contas-receber`
   const response = await apiFetch(url)
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao buscar contas a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function fetchContaReceber(id: number): Promise<ContaReceberDetail> {
   const response = await apiFetch(`${API_BASE}/contas-receber/${id}`)
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao buscar conta a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -64,10 +38,7 @@ export async function criarContaReceber(payload: ContaReceberPayload): Promise<C
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao criar conta a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -80,27 +51,18 @@ export async function atualizarContaReceber(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao atualizar conta a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function receberContaReceber(id: number): Promise<ContaReceberDetail> {
   const response = await apiFetch(`${API_BASE}/contas-receber/${id}/receber`, { method: 'POST' })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao marcar conta como recebida. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function cancelarContaReceber(id: number): Promise<ContaReceberDetail> {
   const response = await apiFetch(`${API_BASE}/contas-receber/${id}/cancelar`, { method: 'POST' })
-  if (!response.ok) {
-    const msg = await extractApiErrorMessage(response)
-    throw new Error(msg ?? `Erro ao cancelar conta a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }

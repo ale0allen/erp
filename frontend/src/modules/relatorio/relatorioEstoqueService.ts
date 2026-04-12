@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type { RelatorioEstoqueFiltros, RelatorioEstoqueItem } from './relatorioEstoque.types'
 
@@ -26,10 +26,6 @@ export async function fetchRelatorioEstoque(
   const url = qs ? `${API_BASE}/produtos/relatorio-estoque?${qs}` : `${API_BASE}/produtos/relatorio-estoque`
 
   const response = await apiFetch(url)
-
-  if (!response.ok) {
-    throw new Error(`Erro ao buscar relatório de estoque. Status: ${response.status}`)
-  }
-
+  await ensureOk(response)
   return response.json()
 }

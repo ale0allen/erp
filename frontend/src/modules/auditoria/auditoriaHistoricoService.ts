@@ -1,21 +1,8 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type { AuditoriaHistoricoFiltros, PageHistoricoAuditoria } from './auditoriaHistorico.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-
-async function readErrorMessage(response: Response): Promise<string> {
-  try {
-    const data: unknown = await response.json()
-    if (data && typeof data === 'object' && 'message' in data) {
-      const m = (data as { message?: unknown }).message
-      if (typeof m === 'string' && m.length > 0) return m
-    }
-  } catch {
-    /* ignore */
-  }
-  return `Erro HTTP ${response.status}`
-}
 
 function appendIfValue(
   params: URLSearchParams,
@@ -57,8 +44,6 @@ export async function fetchHistoricoAuditoria(
   appendIfValue(params, 'fim', fimIso)
 
   const response = await apiFetch(`${API_BASE}/auditoria-historico?${params.toString()}`)
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }

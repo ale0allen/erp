@@ -8,7 +8,7 @@ import {
   type ReactNode
 } from 'react'
 
-import { clearToken, hasAuthToken } from './auth'
+import { clearAuthStorage, hasAuthToken } from './auth'
 import type { AuthUser } from './auth.types'
 import { fetchMeApi } from './authService'
 
@@ -16,6 +16,8 @@ type AuthContextValue = {
   user: AuthUser | null
   loading: boolean
   refreshUser: () => Promise<void>
+  /** Limpa token, sessão e usuário em memória e redireciona para `/login`. */
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -35,11 +37,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const u = await fetchMeApi()
       setUser(u)
     } catch {
-      clearToken()
+      clearAuthStorage()
       setUser(null)
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  const logout = useCallback(() => {
+    setUser(null)
+    setLoading(false)
+    clearAuthStorage()
+    window.location.replace('/login')
   }, [])
 
   useEffect(() => {
@@ -50,9 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       loading,
-      refreshUser
+      refreshUser,
+      logout
     }),
-    [user, loading, refreshUser]
+    [user, loading, refreshUser, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

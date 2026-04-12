@@ -2,7 +2,6 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
 import { isAdmin, podeAcessarFinanceiro, rotuloPerfilPrincipal } from '../auth/permissions'
-import { logout } from '../auth/auth'
 
 import './MainLayout.css'
 
@@ -68,7 +67,7 @@ function getHeaderTitle(pathname: string): string {
 
 export function MainLayout() {
   const { pathname } = useLocation()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   const itensVisiveis = NAV_ITEMS.filter(({ to }) => navItemVisivel(to, user))
 

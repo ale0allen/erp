@@ -1,8 +1,16 @@
 import { getToken } from '../auth/auth'
 
+export {
+  ApiRequestError,
+  ensureOk,
+  getErrorMessage,
+  parseApiErrorBody
+} from './errorHandling'
+export type { ParsedApiError } from './errorHandling'
+
 /**
  * fetch com Authorization Bearer quando existe token no localStorage.
- * Usar em todas as chamadas a APIs protegidas do ERP.
+ * Para erros HTTP, prefira {@link ensureOk} após receber a resposta.
  */
 export function apiFetch(input: string | URL, init?: RequestInit): Promise<Response> {
   const headers = new Headers(init?.headers ?? undefined)

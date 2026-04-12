@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type {
   PerfilOption,
@@ -9,40 +9,21 @@ import type {
 
 const API_BASE = import.meta.env.VITE_API_URL
 
-async function readErrorMessage(response: Response): Promise<string> {
-  try {
-    const data: unknown = await response.json()
-    if (data && typeof data === 'object' && 'message' in data) {
-      const m = (data as { message?: unknown }).message
-      if (typeof m === 'string' && m.length > 0) return m
-    }
-  } catch {
-    /* ignore */
-  }
-  return `Erro HTTP ${response.status}`
-}
-
 export async function fetchPerfisDisponiveis(): Promise<PerfilOption[]> {
   const response = await apiFetch(`${API_BASE}/perfis`)
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function fetchUsuarios(): Promise<UsuarioAdmin[]> {
   const response = await apiFetch(`${API_BASE}/usuarios`)
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }
 
 export async function fetchUsuario(id: number): Promise<UsuarioAdmin> {
   const response = await apiFetch(`${API_BASE}/usuarios/${id}`)
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -60,9 +41,7 @@ export async function criarUsuario(payload: UsuarioCreatePayload): Promise<Usuar
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   })
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -85,8 +64,6 @@ export async function atualizarUsuario(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   })
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response))
-  }
+  await ensureOk(response)
   return response.json()
 }

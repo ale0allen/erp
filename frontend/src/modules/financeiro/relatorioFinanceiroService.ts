@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type {
   RelatorioContasPagarResponse,
@@ -37,9 +37,7 @@ export async function fetchRelatorioContasPagar(
   const qs = paramsPagar(filtros).toString()
   const url = qs ? `${API_PAGAR}/financeiro/relatorios/contas-pagar?${qs}` : `${API_PAGAR}/financeiro/relatorios/contas-pagar`
   const response = await apiFetch(url)
-  if (!response.ok) {
-    throw new Error(`Erro ao carregar relatório de contas a pagar. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
 
@@ -49,8 +47,6 @@ export async function fetchRelatorioContasReceber(
   const qs = paramsReceber(filtros).toString()
   const url = qs ? `${API_RECEBER}/financeiro/relatorios/contas-receber?${qs}` : `${API_RECEBER}/financeiro/relatorios/contas-receber`
   const response = await apiFetch(url)
-  if (!response.ok) {
-    throw new Error(`Erro ao carregar relatório de contas a receber. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }

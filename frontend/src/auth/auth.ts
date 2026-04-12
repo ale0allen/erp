@@ -13,13 +13,29 @@ export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY)
 }
 
+/**
+ * Remove token e dados de sessão do navegador (aba atual).
+ * Use antes de redirecionar ao login ou após 401.
+ */
+export function clearAuthStorage(): void {
+  clearToken()
+  try {
+    sessionStorage.clear()
+  } catch {
+    /* ignore */
+  }
+}
+
 export function hasAuthToken(): boolean {
   const t = getToken()
   return t != null && t.length > 0
 }
 
-/** Remove o token e envia o usuário para a tela de login (recarrega a SPA). */
+/**
+ * Encerra a sessão: limpa armazenamento e substitui a rota por `/login`
+ * (evita manter a página protegida no histórico “Voltar”).
+ */
 export function logout(): void {
-  clearToken()
-  window.location.assign('/login')
+  clearAuthStorage()
+  window.location.replace('/login')
 }

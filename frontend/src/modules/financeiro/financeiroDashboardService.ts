@@ -1,4 +1,4 @@
-import { apiFetch } from '../../api/http'
+import { apiFetch, ensureOk } from '../../api/http'
 
 import type { FinanceiroDashboardFiltros, FinanceiroDashboardResumo } from './financeiroDashboard.types'
 
@@ -14,8 +14,6 @@ export async function fetchFinanceiroDashboard(
   const qs = params.toString()
   const url = qs ? `${API_URL}/financeiro/dashboard?${qs}` : `${API_URL}/financeiro/dashboard`
   const response = await apiFetch(url)
-  if (!response.ok) {
-    throw new Error(`Erro ao carregar dashboard financeiro. Status: ${response.status}`)
-  }
+  await ensureOk(response)
   return response.json()
 }
