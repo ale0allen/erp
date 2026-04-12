@@ -12,11 +12,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -63,6 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (log.isDebugEnabled()) {
+                log.debug("JWT autenticado: userId={}, authorities={}", userId, details.getAuthorities());
+            }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
         }
