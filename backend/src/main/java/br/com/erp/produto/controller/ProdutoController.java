@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "https://erp-six-omega.vercel.app")
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {

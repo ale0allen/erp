@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = "https://erp-six-omega.vercel.app")
 @RestController
 @RequestMapping("/vendas")
 public class VendaController {
