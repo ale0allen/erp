@@ -12,15 +12,12 @@ export async function loginApi(login: string, password: string): Promise<LoginRe
   })
 
   if (!response.ok) {
-    let message = 'Credenciais inválidas'
-    try {
-      const data = (await response.json()) as { message?: string }
-      if (typeof data.message === 'string' && data.message.trim()) {
-        message = data.message.trim()
-      }
-    } catch {
-      // ignore
-    }
+    const parsed = await parseApiErrorBody(response)
+    // Alinhar com defaultMessage(401) em errorHandling: mensagem genérica → texto de login
+    const message =
+      response.status === 401 && parsed.message === 'Não autenticado.'
+        ? 'Credenciais inválidas'
+        : parsed.message
     throw new Error(message)
   }
 
