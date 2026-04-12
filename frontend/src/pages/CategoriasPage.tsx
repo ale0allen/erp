@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { useAuth } from '../auth/AuthContext'
+import { podeGerenciarCadastros } from '../auth/permissions'
 import { CategoriaForm } from '../modules/categoria/CategoriaForm'
 import { CategoriaTable } from '../modules/categoria/CategoriaTable'
 import {
@@ -12,6 +14,9 @@ import type { Categoria } from '../modules/categoria/categoria.types'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
 export function CategoriasPage() {
+  const { user } = useAuth()
+  const podeEditar = podeGerenciarCadastros(user)
+
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [nome, setNome] = useState('')
   const [ativo, setAtivo] = useState(true)
@@ -120,20 +125,26 @@ export function CategoriasPage() {
           </p>
         )}
 
-        <section className="card" aria-labelledby="form-categoria-heading">
-          <h3 id="form-categoria-heading" className="card__title">
-            {editandoId != null ? 'Editar categoria' : 'Nova categoria'}
-          </h3>
-          <CategoriaForm
-            editandoId={editandoId}
-            nome={nome}
-            setNome={setNome}
-            ativo={ativo}
-            setAtivo={setAtivo}
-            onSubmit={salvarCategoria}
-            onCancelarEdicao={limparFormulario}
-          />
-        </section>
+        {podeEditar ? (
+          <section className="card" aria-labelledby="form-categoria-heading">
+            <h3 id="form-categoria-heading" className="card__title">
+              {editandoId != null ? 'Editar categoria' : 'Nova categoria'}
+            </h3>
+            <CategoriaForm
+              editandoId={editandoId}
+              nome={nome}
+              setNome={setNome}
+              ativo={ativo}
+              setAtivo={setAtivo}
+              onSubmit={salvarCategoria}
+              onCancelarEdicao={limparFormulario}
+            />
+          </section>
+        ) : (
+          <p className="status-message" role="status">
+            Perfil <strong>operador</strong>: apenas consulta de categorias.
+          </p>
+        )}
 
         <section className="card" aria-labelledby="lista-categorias-heading">
           <h3 id="lista-categorias-heading" className="card__title">
@@ -143,6 +154,7 @@ export function CategoriasPage() {
             categorias={categorias}
             onEditar={iniciarEdicao}
             onExcluir={excluirCategoria}
+            somenteLeitura={!podeEditar}
           />
         </section>
       </div>

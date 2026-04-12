@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { useAuth } from '../auth/AuthContext'
+import { podeGerenciarCadastros } from '../auth/permissions'
 import { FornecedorForm } from '../modules/fornecedor/FornecedorForm'
 import { FornecedorTable } from '../modules/fornecedor/FornecedorTable'
 import {
@@ -12,6 +14,9 @@ import type { Fornecedor } from '../modules/fornecedor/fornecedor.types'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
 export function FornecedoresPage() {
+  const { user } = useAuth()
+  const podeEditar = podeGerenciarCadastros(user)
+
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [nome, setNome] = useState('')
   const [documento, setDocumento] = useState('')
@@ -130,30 +135,36 @@ export function FornecedoresPage() {
           </p>
         )}
 
-        <section className="card" aria-labelledby="form-fornecedor-heading">
-          <h3 id="form-fornecedor-heading" className="card__title">
-            {editandoId != null ? 'Editar fornecedor' : 'Novo fornecedor'}
-          </h3>
-          <FornecedorForm
-            editandoId={editandoId}
-            nome={nome}
-            setNome={setNome}
-            documento={documento}
-            setDocumento={setDocumento}
-            email={email}
-            setEmail={setEmail}
-            telefone={telefone}
-            setTelefone={setTelefone}
-            nomeContato={nomeContato}
-            setNomeContato={setNomeContato}
-            ativo={ativo}
-            setAtivo={setAtivo}
-            observacoes={observacoes}
-            setObservacoes={setObservacoes}
-            onSubmit={salvarFornecedor}
-            onCancelarEdicao={limparFormulario}
-          />
-        </section>
+        {podeEditar ? (
+          <section className="card" aria-labelledby="form-fornecedor-heading">
+            <h3 id="form-fornecedor-heading" className="card__title">
+              {editandoId != null ? 'Editar fornecedor' : 'Novo fornecedor'}
+            </h3>
+            <FornecedorForm
+              editandoId={editandoId}
+              nome={nome}
+              setNome={setNome}
+              documento={documento}
+              setDocumento={setDocumento}
+              email={email}
+              setEmail={setEmail}
+              telefone={telefone}
+              setTelefone={setTelefone}
+              nomeContato={nomeContato}
+              setNomeContato={setNomeContato}
+              ativo={ativo}
+              setAtivo={setAtivo}
+              observacoes={observacoes}
+              setObservacoes={setObservacoes}
+              onSubmit={salvarFornecedor}
+              onCancelarEdicao={limparFormulario}
+            />
+          </section>
+        ) : (
+          <p className="status-message" role="status">
+            Perfil <strong>operador</strong>: consulta de fornecedores para uso em compras.
+          </p>
+        )}
 
         <section className="card" aria-labelledby="lista-fornecedores-heading">
           <h3 id="lista-fornecedores-heading" className="card__title">
@@ -163,6 +174,7 @@ export function FornecedoresPage() {
             fornecedores={fornecedores}
             onEditar={iniciarEdicao}
             onExcluir={excluirFornecedor}
+            somenteLeitura={!podeEditar}
           />
         </section>
       </div>

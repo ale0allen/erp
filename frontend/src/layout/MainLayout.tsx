@@ -1,10 +1,14 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
+import { useAuth } from '../auth/AuthContext'
+import { isAdmin, podeAcessarFinanceiro, rotuloPerfilPrincipal } from '../auth/permissions'
 import { logout } from '../auth/auth'
 
 import './MainLayout.css'
 
-const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
+type NavItem = { to: string; label: string; end?: boolean }
+
+const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/produtos', label: 'Produtos' },
   { to: '/categorias', label: 'Categorias' },
@@ -21,6 +25,20 @@ const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
   { to: '/configuracoes', label: 'Configurações' }
 ]
 
+const FINANCE_PATHS = new Set([
+  '/contas-pagar',
+  '/contas-receber',
+  '/financeiro',
+  '/relatorio-financeiro'
+])
+
+function navItemVisivel(path: string, user: ReturnType<typeof useAuth>['user']): boolean {
+  if (!user) return false
+  if (path === '/configuracoes') return isAdmin(user)
+  if (FINANCE_PATHS.has(path)) return podeAcessarFinanceiro(user)
+  return true
+}
+
 const PATH_TITLES: Record<string, string> = {
   '/': 'Dashboard',
   '/produtos': 'Produtos',
@@ -35,7 +53,8 @@ const PATH_TITLES: Record<string, string> = {
   '/contas-receber': 'Contas a receber',
   '/financeiro': 'Dashboard financeiro',
   '/relatorio-financeiro': 'Relatório financeiro',
-  '/configuracoes': 'Configurações'
+  '/configuracoes': 'Configurações',
+  '/acesso-negado': 'Acesso negado'
 }
 
 function getHeaderTitle(pathname: string): string {
@@ -44,6 +63,9 @@ function getHeaderTitle(pathname: string): string {
 
 export function MainLayout() {
   const { pathname } = useLocation()
+  const { user } = useAuth()
+
+  const itensVisiveis = NAV_ITEMS.filter(({ to }) => navItemVisivel(to, user))
 
   return (
     <div className="app-shell">
@@ -53,7 +75,7 @@ export function MainLayout() {
           <p className="app-shell__brand-sub">Gestão</p>
         </div>
         <nav className="app-shell__nav">
-          {NAV_ITEMS.map(({ to, label, end }) => (
+          {itensVisiveis.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -74,6 +96,12 @@ export function MainLayout() {
         <header className="app-shell__header">
           <h1 className="app-shell__header-title">{getHeaderTitle(pathname)}</h1>
           <div className="app-shell__header-actions">
+            {user ? (
+              <div className="app-shell__user" aria-label="Usuário logado">
+                <span className="app-shell__user-name">{user.nome}</span>
+                <span className="app-shell__user-role">{rotuloPerfilPrincipal(user)}</span>
+              </div>
+            ) : null}
             <span className="app-shell__header-meta">Ambiente local</span>
             <button
               type="button"

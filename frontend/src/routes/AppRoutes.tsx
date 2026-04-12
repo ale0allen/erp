@@ -1,7 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { RoleGate } from '../auth/RoleGate'
 import { MainLayout } from '../layout/MainLayout'
 import { LoginPage } from '../pages/LoginPage'
+import { AccessDeniedPage } from '../pages/AccessDeniedPage'
 import { CategoriasPage } from '../pages/CategoriasPage'
 import { ConfiguracoesPage } from '../pages/ConfiguracoesPage'
 import { DashboardPage } from '../pages/DashboardPage'
@@ -34,11 +36,47 @@ export function AppRoutes() {
           <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/compras" element={<ComprasPage />} />
           <Route path="/vendas" element={<VendasPage />} />
-          <Route path="/contas-pagar" element={<ContasPagarPage />} />
-          <Route path="/contas-receber" element={<ContasReceberPage />} />
-          <Route path="/financeiro" element={<FinanceiroPage />} />
-          <Route path="/relatorio-financeiro" element={<RelatorioFinanceiroPage />} />
-          <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+          <Route
+            path="/contas-pagar"
+            element={
+              <RoleGate perfis={['ADMIN', 'MANAGER']}>
+                <ContasPagarPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/contas-receber"
+            element={
+              <RoleGate perfis={['ADMIN', 'MANAGER']}>
+                <ContasReceberPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/financeiro"
+            element={
+              <RoleGate perfis={['ADMIN', 'MANAGER']}>
+                <FinanceiroPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/relatorio-financeiro"
+            element={
+              <RoleGate perfis={['ADMIN', 'MANAGER']}>
+                <RelatorioFinanceiroPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/configuracoes"
+            element={
+              <RoleGate perfis={['ADMIN']}>
+                <ConfiguracoesPage />
+              </RoleGate>
+            }
+          />
+          <Route path="/acesso-negado" element={<AccessDeniedPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Route>

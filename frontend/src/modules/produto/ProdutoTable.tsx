@@ -10,12 +10,15 @@ type ProdutoTableProps = {
   produtos: Produto[]
   onEditar: (produto: Produto) => void
   onExcluir: (produto: Produto) => void
+  /** Somente consulta: oculta a coluna de ações (perfil OPERATOR). */
+  somenteLeitura?: boolean
 }
 
 export function ProdutoTable({
   produtos,
   onEditar,
-  onExcluir
+  onExcluir,
+  somenteLeitura = false
 }: ProdutoTableProps) {
   if (produtos.length === 0) {
     return <p className="table-empty">Nenhum produto encontrado.</p>
@@ -44,7 +47,7 @@ export function ProdutoTable({
               Preço de venda
             </th>
             <th scope="col">Ativo</th>
-            <th scope="col">Ações</th>
+            {!somenteLeitura ? <th scope="col">Ações</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -79,24 +82,26 @@ export function ProdutoTable({
                   {produto.precoVenda ?? ''}
                 </td>
                 <td>{produto.ativo ? 'Sim' : 'Não'}</td>
-                <td className="data-table__actions">
-                  <div className="table-actions">
-                    <button
-                      type="button"
-                      className="btn btn--secondary btn--small"
-                      onClick={() => onEditar(produto)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn--danger btn--small"
-                      onClick={() => onExcluir(produto)}
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                </td>
+                {!somenteLeitura ? (
+                  <td className="data-table__actions">
+                    <div className="table-actions">
+                      <button
+                        type="button"
+                        className="btn btn--secondary btn--small"
+                        onClick={() => onEditar(produto)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--danger btn--small"
+                        onClick={() => onExcluir(produto)}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </td>
+                ) : null}
               </tr>
             )
           })}

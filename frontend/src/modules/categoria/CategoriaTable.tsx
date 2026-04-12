@@ -4,12 +4,14 @@ type CategoriaTableProps = {
   categorias: Categoria[]
   onEditar: (categoria: Categoria) => void
   onExcluir: (categoria: Categoria) => void
+  somenteLeitura?: boolean
 }
 
 export function CategoriaTable({
   categorias,
   onEditar,
-  onExcluir
+  onExcluir,
+  somenteLeitura = false
 }: CategoriaTableProps) {
   if (categorias.length === 0) {
     return <p className="table-empty">Nenhuma categoria encontrada.</p>
@@ -23,7 +25,7 @@ export function CategoriaTable({
             <th scope="col">ID</th>
             <th scope="col">Nome</th>
             <th scope="col">Ativo</th>
-            <th scope="col">Ações</th>
+            {!somenteLeitura ? <th scope="col">Ações</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -32,24 +34,26 @@ export function CategoriaTable({
               <td>{categoria.id}</td>
               <td>{categoria.nome}</td>
               <td>{categoria.ativo ? 'Sim' : 'Não'}</td>
-              <td className="data-table__actions">
-                <div className="table-actions">
-                  <button
-                    type="button"
-                    className="btn btn--secondary btn--small"
-                    onClick={() => onEditar(categoria)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn--danger btn--small"
-                    onClick={() => onExcluir(categoria)}
-                  >
-                    Excluir
-                  </button>
-                </div>
-              </td>
+              {!somenteLeitura ? (
+                <td className="data-table__actions">
+                  <div className="table-actions">
+                    <button
+                      type="button"
+                      className="btn btn--secondary btn--small"
+                      onClick={() => onEditar(categoria)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--danger btn--small"
+                      onClick={() => onExcluir(categoria)}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { useAuth } from '../auth/AuthContext'
+import { podeGerenciarCadastros } from '../auth/permissions'
 import { fetchCategorias } from '../modules/categoria/categoriaService'
 import {
   atualizarProduto,
@@ -14,6 +16,9 @@ import type { Produto } from '../modules/produto/produto.types'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
 export function ProdutosPage() {
+  const { user } = useAuth()
+  const podeEditar = podeGerenciarCadastros(user)
+
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [codigo, setCodigo] = useState('')
@@ -191,31 +196,38 @@ export function ProdutosPage() {
           </p>
         )}
 
-        <section className="card" aria-labelledby="form-produto-heading">
-          <h3 id="form-produto-heading" className="card__title">
-            {editandoId != null ? 'Editar produto' : 'Novo produto'}
-          </h3>
-          <ProdutoForm
-            editandoId={editandoId}
-            categorias={categorias}
-            codigo={codigo}
-            setCodigo={setCodigo}
-            nome={nome}
-            setNome={setNome}
-            precoCusto={precoCusto}
-            setPrecoCusto={setPrecoCusto}
-            precoVenda={precoVenda}
-            setPrecoVenda={setPrecoVenda}
-            estoqueMinimo={estoqueMinimo}
-            setEstoqueMinimo={setEstoqueMinimo}
-            ativo={ativo}
-            setAtivo={setAtivo}
-            categoriaId={categoriaId}
-            setCategoriaId={setCategoriaId}
-            onSubmit={salvarProduto}
-            onCancelarEdicao={limparFormulario}
-          />
-        </section>
+        {podeEditar ? (
+          <section className="card" aria-labelledby="form-produto-heading">
+            <h3 id="form-produto-heading" className="card__title">
+              {editandoId != null ? 'Editar produto' : 'Novo produto'}
+            </h3>
+            <ProdutoForm
+              editandoId={editandoId}
+              categorias={categorias}
+              codigo={codigo}
+              setCodigo={setCodigo}
+              nome={nome}
+              setNome={setNome}
+              precoCusto={precoCusto}
+              setPrecoCusto={setPrecoCusto}
+              precoVenda={precoVenda}
+              setPrecoVenda={setPrecoVenda}
+              estoqueMinimo={estoqueMinimo}
+              setEstoqueMinimo={setEstoqueMinimo}
+              ativo={ativo}
+              setAtivo={setAtivo}
+              categoriaId={categoriaId}
+              setCategoriaId={setCategoriaId}
+              onSubmit={salvarProduto}
+              onCancelarEdicao={limparFormulario}
+            />
+          </section>
+        ) : (
+          <p className="status-message" role="status">
+            Perfil <strong>operador</strong>: consulta de produtos. Inclusão e edição são feitas por gestores ou
+            administradores.
+          </p>
+        )}
 
         <section className="card" aria-labelledby="lista-produtos-heading">
           <h3 id="lista-produtos-heading" className="card__title">
@@ -225,6 +237,7 @@ export function ProdutosPage() {
             produtos={produtos}
             onEditar={iniciarEdicao}
             onExcluir={excluirProduto}
+            somenteLeitura={!podeEditar}
           />
         </section>
       </div>

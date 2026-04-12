@@ -1,4 +1,6 @@
-import type { LoginResponseBody } from './auth.types'
+import type { AuthUser, LoginResponseBody } from './auth.types'
+
+import { apiFetch } from '../api/http'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -23,4 +25,12 @@ export async function loginApi(login: string, password: string): Promise<LoginRe
   }
 
   return response.json()
+}
+
+export async function fetchMeApi(): Promise<AuthUser> {
+  const response = await apiFetch(`${API_BASE}/auth/me`)
+  if (!response.ok) {
+    throw new Error(`Sessão inválida (${response.status})`)
+  }
+  return response.json() as Promise<AuthUser>
 }

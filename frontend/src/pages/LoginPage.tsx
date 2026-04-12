@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
+import { useAuth } from '../auth/AuthContext'
 import { setToken, hasAuthToken } from '../auth/auth'
 import { loginApi } from '../auth/authService'
 
@@ -14,6 +15,7 @@ type LocationState = {
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { refreshUser } = useAuth()
   const from = (location.state as LocationState | null)?.from?.pathname ?? '/'
 
   const [login, setLogin] = useState('')
@@ -32,6 +34,7 @@ export function LoginPage() {
     try {
       const data = await loginApi(login, password)
       setToken(data.accessToken)
+      await refreshUser()
       navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível entrar.')

@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             Long userId = jwtService.extractUserId(token);
-            Usuario usuario = usuarioRepository.findById(userId).orElse(null);
+            Usuario usuario = usuarioRepository.findByIdWithPerfis(userId).orElse(null);
             if (usuario == null || !Boolean.TRUE.equals(usuario.getAtivo())) {
                 filterChain.doFilter(request, response);
                 return;

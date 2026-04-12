@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { useAuth } from '../auth/AuthContext'
+import { podeGerenciarCadastros } from '../auth/permissions'
 import { ClienteForm } from '../modules/cliente/ClienteForm'
 import { ClienteTable } from '../modules/cliente/ClienteTable'
 import {
@@ -12,6 +14,9 @@ import type { Cliente } from '../modules/cliente/cliente.types'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
 export function ClientesPage() {
+  const { user } = useAuth()
+  const podeEditar = podeGerenciarCadastros(user)
+
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [nome, setNome] = useState('')
   const [documento, setDocumento] = useState('')
@@ -132,30 +137,36 @@ export function ClientesPage() {
           </p>
         )}
 
-        <section className="card" aria-labelledby="form-cliente-heading">
-          <h3 id="form-cliente-heading" className="card__title">
-            {editandoId != null ? 'Editar cliente' : 'Novo cliente'}
-          </h3>
-          <ClienteForm
-            editandoId={editandoId}
-            nome={nome}
-            setNome={setNome}
-            documento={documento}
-            setDocumento={setDocumento}
-            email={email}
-            setEmail={setEmail}
-            telefone={telefone}
-            setTelefone={setTelefone}
-            nomeContato={nomeContato}
-            setNomeContato={setNomeContato}
-            ativo={ativo}
-            setAtivo={setAtivo}
-            observacoes={observacoes}
-            setObservacoes={setObservacoes}
-            onSubmit={salvarCliente}
-            onCancelarEdicao={limparFormulario}
-          />
-        </section>
+        {podeEditar ? (
+          <section className="card" aria-labelledby="form-cliente-heading">
+            <h3 id="form-cliente-heading" className="card__title">
+              {editandoId != null ? 'Editar cliente' : 'Novo cliente'}
+            </h3>
+            <ClienteForm
+              editandoId={editandoId}
+              nome={nome}
+              setNome={setNome}
+              documento={documento}
+              setDocumento={setDocumento}
+              email={email}
+              setEmail={setEmail}
+              telefone={telefone}
+              setTelefone={setTelefone}
+              nomeContato={nomeContato}
+              setNomeContato={setNomeContato}
+              ativo={ativo}
+              setAtivo={setAtivo}
+              observacoes={observacoes}
+              setObservacoes={setObservacoes}
+              onSubmit={salvarCliente}
+              onCancelarEdicao={limparFormulario}
+            />
+          </section>
+        ) : (
+          <p className="status-message" role="status">
+            Perfil <strong>operador</strong>: consulta de clientes para uso em vendas.
+          </p>
+        )}
 
         <section className="card" aria-labelledby="lista-clientes-heading">
           <h3 id="lista-clientes-heading" className="card__title">
@@ -165,6 +176,7 @@ export function ClientesPage() {
             clientes={clientes}
             onEditar={iniciarEdicao}
             onExcluir={excluirCliente}
+            somenteLeitura={!podeEditar}
           />
         </section>
       </div>
