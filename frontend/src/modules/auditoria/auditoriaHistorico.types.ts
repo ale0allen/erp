@@ -18,14 +18,13 @@ export type AuditoriaHistoricoFiltros = {
   fim: string
 }
 
-/** Resposta paginada Spring (`Page`). */
+/** Resposta paginada (`PageResponse` no backend). */
 export type PageHistoricoAuditoria = {
   content: HistoricoAuditoriaItem[]
+  page: number
+  size: number
   totalElements: number
   totalPages: number
-  size: number
-  number: number
-  first: boolean
   last: boolean
 }
 

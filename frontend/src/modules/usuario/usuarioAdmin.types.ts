@@ -1,5 +1,15 @@
 import type { Auditoria } from '../../types/audit.types'
 
+/** Alinhado a `PageResponse` no backend (listas paginadas). */
+export type PageResponse<T> = {
+  content: T[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  last: boolean
+}
+
 /** Opção vinda de GET /perfis */
 export type PerfilOption = {
   id: number

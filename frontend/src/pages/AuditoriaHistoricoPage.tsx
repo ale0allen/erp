@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { fetchUsuarios } from '../modules/usuario/usuarioAdminService'
+import { fetchUsuariosParaSelect } from '../modules/usuario/usuarioAdminService'
 import type { UsuarioAdmin } from '../modules/usuario/usuarioAdmin.types'
 import { fetchHistoricoAuditoria } from '../modules/auditoria/auditoriaHistoricoService'
 import {
@@ -43,10 +43,11 @@ export function AuditoriaHistoricoPage() {
 
   const carregarUsuarios = useCallback(async () => {
     try {
-      const lista = await fetchUsuarios()
-      setUsuarios(lista)
+      const lista = await fetchUsuariosParaSelect()
+      setUsuarios(Array.isArray(lista) ? lista : [])
     } catch (e) {
       console.error(e)
+      setUsuarios([])
     }
   }, [])
 
@@ -129,7 +130,7 @@ export function AuditoriaHistoricoPage() {
                   }
                 >
                   <option value="">Todos</option>
-                  {usuarios.map(u => (
+                  {(Array.isArray(usuarios) ? usuarios : []).map(u => (
                     <option key={u.id} value={u.id}>
                       {u.nome} ({u.email})
                     </option>
@@ -262,14 +263,14 @@ export function AuditoriaHistoricoPage() {
               {dados != null && dados.totalPages > 1 && (
                 <div className="auditoria-paginacao">
                   <span>
-                    Página {dados.number + 1} de {dados.totalPages} ({dados.totalElements} registros)
+                    Página {dados.page + 1} de {dados.totalPages} ({dados.totalElements} registros)
                   </span>
                   <div className="auditoria-paginacao__nav">
                     <button
                       type="button"
                       className="btn btn--secondary btn--small"
-                      disabled={dados.first}
-                      onClick={() => void buscar(dados.number - 1, aplicados)}
+                      disabled={dados.page <= 0}
+                      onClick={() => void buscar(dados.page - 1, aplicados)}
                     >
                       Anterior
                     </button>
@@ -277,7 +278,7 @@ export function AuditoriaHistoricoPage() {
                       type="button"
                       className="btn btn--secondary btn--small"
                       disabled={dados.last}
-                      onClick={() => void buscar(dados.number + 1, aplicados)}
+                      onClick={() => void buscar(dados.page + 1, aplicados)}
                     >
                       Próxima
                     </button>

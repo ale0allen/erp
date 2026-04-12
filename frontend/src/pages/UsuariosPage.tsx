@@ -25,11 +25,16 @@ function validarEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)
 }
 
+const PAGE_SIZE = 20
+
 export function UsuariosPage() {
   const [usuarios, setUsuarios] = useState<UsuarioAdmin[]>([])
   const [opcoesPerfil, setOpcoesPerfil] = useState<PerfilOption[]>([])
   const [carregando, setCarregando] = useState(true)
   const [mensagem, setMensagem] = useState('')
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
 
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [nome, setNome] = useState('')
@@ -39,15 +44,22 @@ export function UsuariosPage() {
   const [ativo, setAtivo] = useState(true)
   const [perfisSelecionados, setPerfisSelecionados] = useState<Set<string>>(new Set())
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (pageIndex: number) => {
     setCarregando(true)
     try {
-      const [lista, perfis] = await Promise.all([fetchUsuarios(), fetchPerfisDisponiveis()])
-      setUsuarios(lista)
-      setOpcoesPerfil(perfis)
+      const [res, perfis] = await Promise.all([
+        fetchUsuarios({ page: pageIndex, size: PAGE_SIZE }),
+        fetchPerfisDisponiveis()
+      ])
+      setUsuarios(Array.isArray(res.content) ? res.content : [])
+      setPage(typeof res.page === 'number' ? res.page : pageIndex)
+      setTotalPages(typeof res.totalPages === 'number' ? res.totalPages : 0)
+      setTotalElements(typeof res.totalElements === 'number' ? res.totalElements : 0)
+      setOpcoesPerfil(Array.isArray(perfis) ? perfis : [])
       setMensagem('')
     } catch (e) {
       console.error(e)
+      setUsuarios([])
       setMensagem(`Erro ao carregar dados: ${String(e)}`)
     } finally {
       setCarregando(false)
@@ -55,7 +67,7 @@ export function UsuariosPage() {
   }, [])
 
   useEffect(() => {
-    void carregar()
+    void carregar(0)
   }, [carregar])
 
   const limparFormulario = () => {
@@ -150,7 +162,7 @@ export function UsuariosPage() {
         })
       }
       limparFormulario()
-      await carregar()
+      await carregar(page)
       setMensagem(criando ? 'Usuário criado com sucesso.' : 'Usuário atualizado com sucesso.')
     } catch (err) {
       console.error(err)
@@ -321,7 +333,7 @@ export function UsuariosPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {usuarios.map(u => (
+                  {(Array.isArray(usuarios) ? usuarios : []).map(u => (
                     <tr key={u.id}>
                       <td>{u.nome}</td>
                       <td>{u.email}</td>
@@ -338,7 +350,7 @@ export function UsuariosPage() {
                         </span>
                       </td>
                       <td>
-                        {u.perfis.length === 0
+                        {!Array.isArray(u.perfis) || u.perfis.length === 0
                           ? '—'
                           : u.perfis.map(perfilLabel).join(', ')}
                       </td>
@@ -360,6 +372,32 @@ export function UsuariosPage() {
               </table>
             </div>
           )}
+
+          {!carregando && totalPages > 1 ? (
+            <div className="usuarios__paginacao" style={{ marginTop: '1rem' }}>
+              <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
+                Página {page + 1} de {totalPages} ({totalElements} usuários)
+              </span>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--small"
+                  disabled={page <= 0}
+                  onClick={() => void carregar(page - 1)}
+                >
+                  Anterior
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--small"
+                  disabled={page >= totalPages - 1}
+                  onClick={() => void carregar(page + 1)}
+                >
+                  Próxima
+                </button>
+              </div>
+            </div>
+          ) : null}
         </section>
       </div>
     </div>

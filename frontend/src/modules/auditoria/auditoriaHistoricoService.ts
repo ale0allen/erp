@@ -45,5 +45,33 @@ export async function fetchHistoricoAuditoria(
 
   const response = await apiFetch(`${API_BASE}/auditoria-historico?${params.toString()}`)
   await ensureOk(response)
-  return response.json()
+  const raw: unknown = await response.json()
+  return normalizePageHistorico(raw)
+}
+
+/** Aceita `PageResponse` (`page`) ou formato legado Spring (`number`). */
+function normalizePageHistorico(raw: unknown): PageHistoricoAuditoria {
+  if (!raw || typeof raw !== 'object') {
+    return {
+      content: [],
+      page: 0,
+      size: 50,
+      totalElements: 0,
+      totalPages: 0,
+      last: true
+    }
+  }
+  const o = raw as Record<string, unknown>
+  const content = Array.isArray(o.content) ? o.content : []
+  const page =
+    typeof o.page === 'number'
+      ? o.page
+      : typeof o.number === 'number'
+        ? o.number
+        : 0
+  const size = typeof o.size === 'number' ? o.size : 50
+  const totalElements = typeof o.totalElements === 'number' ? o.totalElements : 0
+  const totalPages = typeof o.totalPages === 'number' ? o.totalPages : 0
+  const last = typeof o.last === 'boolean' ? o.last : totalPages <= 1
+  return { content, page, size, totalElements, totalPages, last }
 }
