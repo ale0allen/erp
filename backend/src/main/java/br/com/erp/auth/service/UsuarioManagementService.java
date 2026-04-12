@@ -2,6 +2,9 @@ package br.com.erp.auth.service;
 
 import br.com.erp.audit.AuditoriaService;
 import br.com.erp.audit.dto.AuditoriaResponse;
+import br.com.erp.auditoria.AuditoriaHistoricoAcoes;
+import br.com.erp.auditoria.AuditoriaHistoricoModulos;
+import br.com.erp.auditoria.service.AuditoriaHistoricoService;
 import br.com.erp.auth.dto.UsuarioAdminResponse;
 import br.com.erp.auth.dto.UsuarioCreateRequest;
 import br.com.erp.auth.dto.UsuarioUpdateRequest;
@@ -27,17 +30,20 @@ public class UsuarioManagementService {
     private final PerfilRepository perfilRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditoriaService auditoriaService;
+    private final AuditoriaHistoricoService auditoriaHistoricoService;
 
     public UsuarioManagementService(
             UsuarioRepository usuarioRepository,
             PerfilRepository perfilRepository,
             PasswordEncoder passwordEncoder,
-            AuditoriaService auditoriaService
+            AuditoriaService auditoriaService,
+            AuditoriaHistoricoService auditoriaHistoricoService
     ) {
         this.usuarioRepository = usuarioRepository;
         this.perfilRepository = perfilRepository;
         this.passwordEncoder = passwordEncoder;
         this.auditoriaService = auditoriaService;
+        this.auditoriaHistoricoService = auditoriaHistoricoService;
     }
 
     @Transactional(readOnly = true)
@@ -84,6 +90,12 @@ public class UsuarioManagementService {
 
         u = usuarioRepository.save(u);
         u = usuarioRepository.findByIdWithPerfis(u.getId()).orElse(u);
+        auditoriaHistoricoService.registrar(
+                AuditoriaHistoricoAcoes.USER_CREATED,
+                AuditoriaHistoricoModulos.USER,
+                u.getId(),
+                "Usuário criado: " + u.getEmail()
+        );
         return toAdminResponse(u);
     }
 
@@ -91,6 +103,13 @@ public class UsuarioManagementService {
     public UsuarioAdminResponse atualizar(Long id, UsuarioUpdateRequest request) {
         Usuario u = usuarioRepository.findByIdWithPerfis(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
+
+        boolean ativoAntes = Boolean.TRUE.equals(u.getAtivo());
+        Set<String> perfisAntes = u.getPerfis() == null || u.getPerfis().isEmpty()
+                ? Set.of()
+                : u.getPerfis().stream()
+                .map(Perfil::getNome)
+                .collect(Collectors.toCollection(TreeSet::new));
 
         String novoEmail = request.email().trim().toLowerCase(Locale.ROOT);
         if (!novoEmail.equalsIgnoreCase(u.getEmail())) {
@@ -132,6 +151,37 @@ public class UsuarioManagementService {
 
         u = usuarioRepository.save(u);
         u = usuarioRepository.findByIdWithPerfis(u.getId()).orElse(u);
+
+        Set<String> perfisDepois = u.getPerfis() == null || u.getPerfis().isEmpty()
+                ? Set.of()
+                : u.getPerfis().stream()
+                .map(Perfil::getNome)
+                .collect(Collectors.toCollection(TreeSet::new));
+        boolean ativoDepois = Boolean.TRUE.equals(u.getAtivo());
+
+        if (ativoAntes && !ativoDepois) {
+            auditoriaHistoricoService.registrar(
+                    AuditoriaHistoricoAcoes.USER_INACTIVATED,
+                    AuditoriaHistoricoModulos.USER,
+                    u.getId(),
+                    "Usuário inativado: " + u.getEmail()
+            );
+        } else if (!perfisAntes.equals(perfisDepois)) {
+            auditoriaHistoricoService.registrar(
+                    AuditoriaHistoricoAcoes.USER_ROLE_CHANGED,
+                    AuditoriaHistoricoModulos.USER,
+                    u.getId(),
+                    "Perfis atualizados (" + String.join(", ", perfisDepois) + "): " + u.getEmail()
+            );
+        } else {
+            auditoriaHistoricoService.registrar(
+                    AuditoriaHistoricoAcoes.USER_UPDATED,
+                    AuditoriaHistoricoModulos.USER,
+                    u.getId(),
+                    "Usuário atualizado: " + u.getEmail()
+            );
+        }
+
         return toAdminResponse(u);
     }
 

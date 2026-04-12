@@ -123,6 +123,8 @@ public class SecurityConfig {
                         // Usuários e perfis: somente ADMIN
                         .requestMatchers("/usuarios", "/usuarios/**", "/perfis", "/perfis/**")
                         .hasRole("ADMIN")
+                        .requestMatchers("/auditoria-historico", "/auditoria-historico/**")
+                        .hasRole("ADMIN")
                         .requestMatchers("/auth/me")
                         .hasAnyRole("ADMIN", "MANAGER", "OPERATOR")
                         .anyRequest().denyAll())

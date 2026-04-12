@@ -2,6 +2,9 @@ package br.com.erp.configuracao.service;
 
 import br.com.erp.audit.AuditoriaService;
 import br.com.erp.audit.dto.AuditoriaResponse;
+import br.com.erp.auditoria.AuditoriaHistoricoAcoes;
+import br.com.erp.auditoria.AuditoriaHistoricoModulos;
+import br.com.erp.auditoria.service.AuditoriaHistoricoService;
 import br.com.erp.configuracao.dto.ConfiguracaoSistemaRequest;
 import br.com.erp.configuracao.dto.ConfiguracaoSistemaResponse;
 import br.com.erp.configuracao.entity.ConfiguracaoSistema;
@@ -16,13 +19,16 @@ public class ConfiguracaoSistemaService {
 
     private final ConfiguracaoSistemaRepository repository;
     private final AuditoriaService auditoriaService;
+    private final AuditoriaHistoricoService auditoriaHistoricoService;
 
     public ConfiguracaoSistemaService(
             ConfiguracaoSistemaRepository repository,
-            AuditoriaService auditoriaService
+            AuditoriaService auditoriaService,
+            AuditoriaHistoricoService auditoriaHistoricoService
     ) {
         this.repository = repository;
         this.auditoriaService = auditoriaService;
+        this.auditoriaHistoricoService = auditoriaHistoricoService;
     }
 
     public ConfiguracaoSistemaResponse obterAtual() {
@@ -40,7 +46,14 @@ public class ConfiguracaoSistemaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Configuração do sistema já existe.");
         }
         ConfiguracaoSistema e = novaEntidadePadrao();
-        return toResponse(repository.save(e));
+        ConfiguracaoSistema salvo = repository.save(e);
+        auditoriaHistoricoService.registrar(
+                AuditoriaHistoricoAcoes.SETTINGS_UPDATED,
+                AuditoriaHistoricoModulos.SETTINGS,
+                ConfiguracaoSistema.ID_UNICO,
+                "Configurações do sistema inicializadas."
+        );
+        return toResponse(salvo);
     }
 
     @Transactional
@@ -51,7 +64,14 @@ public class ConfiguracaoSistemaService {
                         "Configuração não encontrada."
                 ));
         aplicar(request, e);
-        return toResponse(repository.save(e));
+        ConfiguracaoSistema salvo = repository.save(e);
+        auditoriaHistoricoService.registrar(
+                AuditoriaHistoricoAcoes.SETTINGS_UPDATED,
+                AuditoriaHistoricoModulos.SETTINGS,
+                ConfiguracaoSistema.ID_UNICO,
+                "Configurações do sistema atualizadas."
+        );
+        return toResponse(salvo);
     }
 
     private static ConfiguracaoSistema novaEntidadePadrao() {

@@ -1,6 +1,9 @@
 package br.com.erp.venda.service;
 
 import br.com.erp.audit.AuditoriaService;
+import br.com.erp.auditoria.AuditoriaHistoricoAcoes;
+import br.com.erp.auditoria.AuditoriaHistoricoModulos;
+import br.com.erp.auditoria.service.AuditoriaHistoricoService;
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.cliente.repository.ClienteRepository;
 import br.com.erp.estoque.TipoMovimentacaoEstoque;
@@ -35,6 +38,7 @@ public class VendaService {
     private final MovimentacaoEstoqueService movimentacaoEstoqueService;
     private final ContaReceberService contaReceberService;
     private final AuditoriaService auditoriaService;
+    private final AuditoriaHistoricoService auditoriaHistoricoService;
 
     public VendaService(
             VendaRepository vendaRepository,
@@ -42,7 +46,8 @@ public class VendaService {
             ProdutoRepository produtoRepository,
             MovimentacaoEstoqueService movimentacaoEstoqueService,
             ContaReceberService contaReceberService,
-            AuditoriaService auditoriaService
+            AuditoriaService auditoriaService,
+            AuditoriaHistoricoService auditoriaHistoricoService
     ) {
         this.vendaRepository = vendaRepository;
         this.clienteRepository = clienteRepository;
@@ -50,6 +55,7 @@ public class VendaService {
         this.movimentacaoEstoqueService = movimentacaoEstoqueService;
         this.contaReceberService = contaReceberService;
         this.auditoriaService = auditoriaService;
+        this.auditoriaHistoricoService = auditoriaHistoricoService;
     }
 
     @Transactional(readOnly = true)
@@ -170,6 +176,13 @@ public class VendaService {
             );
             movimentacaoEstoqueService.registrar(movReq);
         }
+
+        auditoriaHistoricoService.registrar(
+                AuditoriaHistoricoAcoes.SALE_COMPLETED,
+                AuditoriaHistoricoModulos.SALE,
+                salva.getId(),
+                "Venda #" + salva.getId() + " finalizada. Cliente: " + salva.getCliente().getNome()
+        );
 
         return toDetail(salva);
     }

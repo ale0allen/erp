@@ -1,6 +1,9 @@
 package br.com.erp.compra.service;
 
 import br.com.erp.audit.AuditoriaService;
+import br.com.erp.auditoria.AuditoriaHistoricoAcoes;
+import br.com.erp.auditoria.AuditoriaHistoricoModulos;
+import br.com.erp.auditoria.service.AuditoriaHistoricoService;
 import br.com.erp.compra.StatusCompra;
 import br.com.erp.compra.dto.*;
 import br.com.erp.compra.entity.Compra;
@@ -35,6 +38,7 @@ public class CompraService {
     private final MovimentacaoEstoqueService movimentacaoEstoqueService;
     private final ContaPagarService contaPagarService;
     private final AuditoriaService auditoriaService;
+    private final AuditoriaHistoricoService auditoriaHistoricoService;
 
     public CompraService(
             CompraRepository compraRepository,
@@ -42,7 +46,8 @@ public class CompraService {
             ProdutoRepository produtoRepository,
             MovimentacaoEstoqueService movimentacaoEstoqueService,
             ContaPagarService contaPagarService,
-            AuditoriaService auditoriaService
+            AuditoriaService auditoriaService,
+            AuditoriaHistoricoService auditoriaHistoricoService
     ) {
         this.compraRepository = compraRepository;
         this.fornecedorRepository = fornecedorRepository;
@@ -50,6 +55,7 @@ public class CompraService {
         this.movimentacaoEstoqueService = movimentacaoEstoqueService;
         this.contaPagarService = contaPagarService;
         this.auditoriaService = auditoriaService;
+        this.auditoriaHistoricoService = auditoriaHistoricoService;
     }
 
     @Transactional(readOnly = true)
@@ -154,6 +160,13 @@ public class CompraService {
             );
             movimentacaoEstoqueService.registrar(movReq);
         }
+
+        auditoriaHistoricoService.registrar(
+                AuditoriaHistoricoAcoes.PURCHASE_COMPLETED,
+                AuditoriaHistoricoModulos.PURCHASE,
+                salva.getId(),
+                "Compra #" + salva.getId() + " finalizada. Fornecedor: " + salva.getFornecedor().getNome()
+        );
 
         return toDetail(salva);
     }

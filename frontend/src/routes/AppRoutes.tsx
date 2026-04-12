@@ -6,6 +6,7 @@ import { LoginPage } from '../pages/LoginPage'
 import { AccessDeniedPage } from '../pages/AccessDeniedPage'
 import { CategoriasPage } from '../pages/CategoriasPage'
 import { ConfiguracoesPage } from '../pages/ConfiguracoesPage'
+import { AuditoriaHistoricoPage } from '../pages/AuditoriaHistoricoPage'
 import { UsuariosPage } from '../pages/UsuariosPage'
 import { DashboardPage } from '../pages/DashboardPage'
 import { EstoquePage } from '../pages/EstoquePage'
@@ -74,6 +75,14 @@ export function AppRoutes() {
             element={
               <RoleGate perfis={['ADMIN']}>
                 <UsuariosPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/auditoria-historico"
+            element={
+              <RoleGate perfis={['ADMIN']}>
+                <AuditoriaHistoricoPage />
               </RoleGate>
             }
           />
