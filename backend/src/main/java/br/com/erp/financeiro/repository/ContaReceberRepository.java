@@ -1,13 +1,22 @@
 package br.com.erp.financeiro.repository;
 
 import br.com.erp.financeiro.entity.ContaReceber;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ContaReceberRepository extends JpaRepository<ContaReceber, Long> {
+public interface ContaReceberRepository extends JpaRepository<ContaReceber, Long>, JpaSpecificationExecutor<ContaReceber> {
+
+    @EntityGraph(attributePaths = "cliente")
+    @Override
+    Page<ContaReceber> findAll(Specification<ContaReceber> spec, Pageable pageable);
 
     boolean existsByVenda_Id(Long vendaId);
 

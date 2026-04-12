@@ -1,9 +1,13 @@
 package br.com.erp.fornecedor.controller;
 
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.fornecedor.dto.FornecedorRequest;
 import br.com.erp.fornecedor.dto.FornecedorResponse;
 import br.com.erp.fornecedor.service.FornecedorService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +24,17 @@ public class FornecedorController {
     }
 
     @GetMapping
-    public List<FornecedorResponse> listar() {
-        return fornecedorService.listarTodos();
+    public PageResponse<FornecedorResponse> listar(
+            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Boolean ativo
+    ) {
+        return fornecedorService.listarPaginado(pageable, q, ativo);
+    }
+
+    @GetMapping("/todas")
+    public List<FornecedorResponse> listarTodas() {
+        return fornecedorService.listarTodas();
     }
 
     @GetMapping("/{id}")

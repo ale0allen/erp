@@ -4,11 +4,13 @@ import br.com.erp.audit.AuditoriaService;
 import br.com.erp.auditoria.AuditoriaHistoricoAcoes;
 import br.com.erp.auditoria.AuditoriaHistoricoModulos;
 import br.com.erp.auditoria.service.AuditoriaHistoricoService;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.compra.StatusCompra;
 import br.com.erp.compra.dto.*;
 import br.com.erp.compra.entity.Compra;
 import br.com.erp.compra.entity.CompraItem;
 import br.com.erp.compra.repository.CompraRepository;
+import br.com.erp.compra.spec.CompraSpecifications;
 import br.com.erp.estoque.TipoMovimentacaoEstoque;
 import br.com.erp.estoque.dto.MovimentacaoEstoqueRequest;
 import br.com.erp.estoque.service.MovimentacaoEstoqueService;
@@ -17,17 +19,16 @@ import br.com.erp.fornecedor.entity.Fornecedor;
 import br.com.erp.fornecedor.repository.FornecedorRepository;
 import br.com.erp.produto.entity.Produto;
 import br.com.erp.produto.repository.ProdutoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class CompraService {
@@ -59,31 +60,18 @@ public class CompraService {
     }
 
     @Transactional(readOnly = true)
-    public List<CompraListItemResponse> listar(
+    public PageResponse<CompraListItemResponse> listarPaginado(
+            Pageable pageable,
             Long fornecedorId,
             StatusCompra status,
             LocalDate startDate,
             LocalDate endDate
     ) {
-        Stream<Compra> stream = compraRepository.findAllWithFornecedor().stream();
-
-        if (fornecedorId != null) {
-            stream = stream.filter(c -> Objects.equals(c.getFornecedor().getId(), fornecedorId));
-        }
-        if (status != null) {
-            stream = stream.filter(c -> c.getStatus() == status);
-        }
-
-        if (startDate != null) {
-            Instant start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-            stream = stream.filter(c -> !c.getDataCompra().isBefore(start));
-        }
-        if (endDate != null) {
-            Instant endExclusive = endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            stream = stream.filter(c -> c.getDataCompra().isBefore(endExclusive));
-        }
-
-        return stream.map(this::toListItem).toList();
+        Page<Compra> page = compraRepository.findAll(
+                CompraSpecifications.comFiltros(fornecedorId, status, startDate, endDate),
+                pageable
+        );
+        return PageResponse.from(page.map(this::toListItem));
     }
 
     @Transactional(readOnly = true)

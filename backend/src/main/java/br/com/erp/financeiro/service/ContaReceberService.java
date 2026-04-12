@@ -2,6 +2,7 @@ package br.com.erp.financeiro.service;
 
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.cliente.repository.ClienteRepository;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.financeiro.StatusContaReceber;
 import br.com.erp.venda.entity.Venda;
 import br.com.erp.financeiro.dto.ContaReceberDetailResponse;
@@ -12,6 +13,9 @@ import br.com.erp.financeiro.dto.RelatorioContasReceberResponse;
 import br.com.erp.financeiro.dto.RelatorioTotaisReceber;
 import br.com.erp.financeiro.entity.ContaReceber;
 import br.com.erp.financeiro.repository.ContaReceberRepository;
+import br.com.erp.financeiro.spec.ContaReceberSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +45,8 @@ public class ContaReceberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContaReceberListItemResponse> listar(
+    public PageResponse<ContaReceberListItemResponse> listarPaginado(
+            Pageable pageable,
             Long clienteId,
             StatusContaReceber status,
             LocalDate startDueDate,
@@ -49,29 +54,18 @@ public class ContaReceberService {
             String description
     ) {
         LocalDate hoje = LocalDate.now();
-        Stream<ContaReceber> stream = contaReceberRepository.findAllWithCliente().stream();
-
-        if (clienteId != null) {
-            stream = stream.filter(c -> c.getCliente() != null && Objects.equals(c.getCliente().getId(), clienteId));
-        }
-        if (startDueDate != null) {
-            stream = stream.filter(c -> !c.getDataVencimento().isBefore(startDueDate));
-        }
-        if (endDueDate != null) {
-            stream = stream.filter(c -> !c.getDataVencimento().isAfter(endDueDate));
-        }
-        if (description != null && !description.isBlank()) {
-            String needle = description.trim().toLowerCase(Locale.ROOT);
-            stream = stream.filter(c -> c.getDescricao() != null && c.getDescricao().toLowerCase(Locale.ROOT).contains(needle));
-        }
-
-        Stream<ContaReceberListItemResponse> rows = stream.map(c -> toListItem(c, hoje));
-
-        if (status != null) {
-            rows = rows.filter(r -> r.status() == status);
-        }
-
-        return rows.toList();
+        Page<ContaReceber> page = contaReceberRepository.findAll(
+                ContaReceberSpecifications.comFiltros(
+                        clienteId,
+                        status,
+                        startDueDate,
+                        endDueDate,
+                        description,
+                        hoje
+                ),
+                pageable
+        );
+        return PageResponse.from(page.map(c -> toListItem(c, hoje)));
     }
 
     @Transactional(readOnly = true)

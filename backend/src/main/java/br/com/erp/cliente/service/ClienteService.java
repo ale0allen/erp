@@ -5,6 +5,11 @@ import br.com.erp.cliente.dto.ClienteRequest;
 import br.com.erp.cliente.dto.ClienteResponse;
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.cliente.repository.ClienteRepository;
+import br.com.erp.cliente.spec.ClienteSpecifications;
+import br.com.erp.common.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +30,18 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClienteResponse> listarTodos() {
-        List<Cliente> lista = clienteRepository.findAll();
+    public PageResponse<ClienteResponse> listarPaginado(Pageable pageable, String q, Boolean ativo) {
+        Page<Cliente> page = clienteRepository.findAll(
+                ClienteSpecifications.comFiltros(q, ativo),
+                pageable
+        );
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(page.getContent());
+        return PageResponse.from(page.map(c -> toResponse(c, nomes)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClienteResponse> listarTodas() {
+        List<Cliente> lista = clienteRepository.findAll(Sort.by("nome"));
         Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
         return lista.stream()
                 .map(c -> toResponse(c, nomes))

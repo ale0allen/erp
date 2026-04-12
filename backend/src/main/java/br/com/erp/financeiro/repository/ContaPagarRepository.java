@@ -1,13 +1,22 @@
 package br.com.erp.financeiro.repository;
 
 import br.com.erp.financeiro.entity.ContaPagar;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ContaPagarRepository extends JpaRepository<ContaPagar, Long> {
+public interface ContaPagarRepository extends JpaRepository<ContaPagar, Long>, JpaSpecificationExecutor<ContaPagar> {
+
+    @EntityGraph(attributePaths = "fornecedor")
+    @Override
+    Page<ContaPagar> findAll(Specification<ContaPagar> spec, Pageable pageable);
 
     boolean existsByCompra_Id(Long compraId);
 

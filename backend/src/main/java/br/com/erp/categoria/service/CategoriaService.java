@@ -5,7 +5,12 @@ import br.com.erp.categoria.dto.CategoriaRequest;
 import br.com.erp.categoria.dto.CategoriaResponse;
 import br.com.erp.categoria.entity.Categoria;
 import br.com.erp.categoria.repository.CategoriaRepository;
+import br.com.erp.categoria.spec.CategoriaSpecifications;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.produto.repository.ProdutoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +37,19 @@ public class CategoriaService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoriaResponse> listarTodos() {
-        List<Categoria> lista = categoriaRepository.findAll();
+    public PageResponse<CategoriaResponse> listarPaginado(Pageable pageable, String q, Boolean ativo) {
+        Page<Categoria> page = categoriaRepository.findAll(
+                CategoriaSpecifications.comFiltros(q, ativo),
+                pageable
+        );
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(page.getContent());
+        return PageResponse.from(page.map(c -> toResponse(c, nomes)));
+    }
+
+    /** Lista completa ordenada por nome (selects em formulários). */
+    @Transactional(readOnly = true)
+    public List<CategoriaResponse> listarTodas() {
+        List<Categoria> lista = categoriaRepository.findAll(Sort.by("nome"));
         Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
         return lista.stream()
                 .map(c -> toResponse(c, nomes))

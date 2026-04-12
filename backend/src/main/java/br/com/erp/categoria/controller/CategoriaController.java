@@ -3,7 +3,11 @@ package br.com.erp.categoria.controller;
 import br.com.erp.categoria.dto.CategoriaRequest;
 import br.com.erp.categoria.dto.CategoriaResponse;
 import br.com.erp.categoria.service.CategoriaService;
+import br.com.erp.common.dto.PageResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +24,17 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public List<CategoriaResponse> listar() {
-        return categoriaService.listarTodos();
+    public PageResponse<CategoriaResponse> listar(
+            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Boolean ativo
+    ) {
+        return categoriaService.listarPaginado(pageable, q, ativo);
+    }
+
+    @GetMapping("/todas")
+    public List<CategoriaResponse> listarTodas() {
+        return categoriaService.listarTodas();
     }
 
     @GetMapping("/{id}")

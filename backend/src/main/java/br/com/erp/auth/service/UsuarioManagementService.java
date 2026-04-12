@@ -12,6 +12,10 @@ import br.com.erp.auth.entity.Perfil;
 import br.com.erp.auth.entity.Usuario;
 import br.com.erp.auth.repository.PerfilRepository;
 import br.com.erp.auth.repository.UsuarioRepository;
+import br.com.erp.auth.spec.UsuarioSpecifications;
+import br.com.erp.common.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,12 +51,13 @@ public class UsuarioManagementService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioAdminResponse> listarTodos() {
-        List<Usuario> lista = usuarioRepository.findAllByOrderByIdAsc();
-        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
-        return lista.stream()
-                .map(u -> toAdminResponse(u, nomes))
-                .toList();
+    public PageResponse<UsuarioAdminResponse> listarPaginado(Pageable pageable, String q, Boolean ativo) {
+        Page<Usuario> page = usuarioRepository.findAll(
+                UsuarioSpecifications.comFiltros(q, ativo),
+                pageable
+        );
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(page.getContent());
+        return PageResponse.from(page.map(u -> toAdminResponse(u, nomes)));
     }
 
     @Transactional(readOnly = true)

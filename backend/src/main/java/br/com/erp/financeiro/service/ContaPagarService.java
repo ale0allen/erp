@@ -1,6 +1,7 @@
 package br.com.erp.financeiro.service;
 
 import br.com.erp.compra.entity.Compra;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.financeiro.StatusContaPagar;
 import br.com.erp.financeiro.dto.ContaPagarDetailResponse;
 import br.com.erp.financeiro.dto.ContaPagarListItemResponse;
@@ -10,8 +11,11 @@ import br.com.erp.financeiro.dto.RelatorioContasPagarResponse;
 import br.com.erp.financeiro.dto.RelatorioTotaisPagar;
 import br.com.erp.financeiro.entity.ContaPagar;
 import br.com.erp.financeiro.repository.ContaPagarRepository;
+import br.com.erp.financeiro.spec.ContaPagarSpecifications;
 import br.com.erp.fornecedor.entity.Fornecedor;
 import br.com.erp.fornecedor.repository.FornecedorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +45,8 @@ public class ContaPagarService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContaPagarListItemResponse> listar(
+    public PageResponse<ContaPagarListItemResponse> listarPaginado(
+            Pageable pageable,
             Long fornecedorId,
             StatusContaPagar status,
             LocalDate startDueDate,
@@ -49,29 +54,18 @@ public class ContaPagarService {
             String description
     ) {
         LocalDate hoje = LocalDate.now();
-        Stream<ContaPagar> stream = contaPagarRepository.findAllWithFornecedor().stream();
-
-        if (fornecedorId != null) {
-            stream = stream.filter(c -> c.getFornecedor() != null && Objects.equals(c.getFornecedor().getId(), fornecedorId));
-        }
-        if (startDueDate != null) {
-            stream = stream.filter(c -> !c.getDataVencimento().isBefore(startDueDate));
-        }
-        if (endDueDate != null) {
-            stream = stream.filter(c -> !c.getDataVencimento().isAfter(endDueDate));
-        }
-        if (description != null && !description.isBlank()) {
-            String needle = description.trim().toLowerCase(Locale.ROOT);
-            stream = stream.filter(c -> c.getDescricao() != null && c.getDescricao().toLowerCase(Locale.ROOT).contains(needle));
-        }
-
-        Stream<ContaPagarListItemResponse> rows = stream.map(c -> toListItem(c, hoje));
-
-        if (status != null) {
-            rows = rows.filter(r -> r.status() == status);
-        }
-
-        return rows.toList();
+        Page<ContaPagar> page = contaPagarRepository.findAll(
+                ContaPagarSpecifications.comFiltros(
+                        fornecedorId,
+                        status,
+                        startDueDate,
+                        endDueDate,
+                        description,
+                        hoje
+                ),
+                pageable
+        );
+        return PageResponse.from(page.map(c -> toListItem(c, hoje)));
     }
 
     @Transactional(readOnly = true)

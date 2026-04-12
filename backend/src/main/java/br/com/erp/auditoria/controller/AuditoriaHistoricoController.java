@@ -2,7 +2,7 @@ package br.com.erp.auditoria.controller;
 
 import br.com.erp.auditoria.dto.HistoricoAuditoriaResponse;
 import br.com.erp.auditoria.service.AuditoriaHistoricoService;
-import org.springframework.data.domain.Page;
+import br.com.erp.common.dto.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -22,7 +22,7 @@ public class AuditoriaHistoricoController {
     }
 
     @GetMapping
-    public Page<HistoricoAuditoriaResponse> listar(
+    public PageResponse<HistoricoAuditoriaResponse> listar(
             @PageableDefault(size = 50, sort = "realizadoEm", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) Long usuarioId,
             @RequestParam(required = false) String modulo,
@@ -30,7 +30,9 @@ public class AuditoriaHistoricoController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant inicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant fim
     ) {
-        return auditoriaHistoricoService.listar(pageable, usuarioId, modulo, acao, inicio, fim);
+        return PageResponse.from(
+                auditoriaHistoricoService.listar(pageable, usuarioId, modulo, acao, inicio, fim)
+        );
     }
 
     @GetMapping("/{id}")

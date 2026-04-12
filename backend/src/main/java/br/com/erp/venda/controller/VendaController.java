@@ -1,15 +1,18 @@
 package br.com.erp.venda.controller;
 
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.venda.StatusVenda;
 import br.com.erp.venda.dto.VendaDetailResponse;
 import br.com.erp.venda.dto.VendaListItemResponse;
 import br.com.erp.venda.dto.VendaRequest;
 import br.com.erp.venda.service.VendaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/vendas")
@@ -22,13 +25,14 @@ public class VendaController {
     }
 
     @GetMapping
-    public List<VendaListItemResponse> listar(
+    public PageResponse<VendaListItemResponse> listar(
+            @PageableDefault(size = 20, sort = "dataVenda", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) Long clienteId,
             @RequestParam(required = false) StatusVenda status,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
     ) {
-        return vendaService.listar(clienteId, status, startDate, endDate);
+        return vendaService.listarPaginado(pageable, clienteId, status, startDate, endDate);
     }
 
     @GetMapping("/{id}")

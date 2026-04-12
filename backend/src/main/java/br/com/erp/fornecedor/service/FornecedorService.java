@@ -3,8 +3,13 @@ package br.com.erp.fornecedor.service;
 import br.com.erp.audit.AuditoriaService;
 import br.com.erp.fornecedor.dto.FornecedorRequest;
 import br.com.erp.fornecedor.dto.FornecedorResponse;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.fornecedor.entity.Fornecedor;
 import br.com.erp.fornecedor.repository.FornecedorRepository;
+import br.com.erp.fornecedor.spec.FornecedorSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +30,18 @@ public class FornecedorService {
     }
 
     @Transactional(readOnly = true)
-    public List<FornecedorResponse> listarTodos() {
-        List<Fornecedor> lista = fornecedorRepository.findAll();
+    public PageResponse<FornecedorResponse> listarPaginado(Pageable pageable, String q, Boolean ativo) {
+        Page<Fornecedor> page = fornecedorRepository.findAll(
+                FornecedorSpecifications.comFiltros(q, ativo),
+                pageable
+        );
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(page.getContent());
+        return PageResponse.from(page.map(f -> toResponse(f, nomes)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<FornecedorResponse> listarTodas() {
+        List<Fornecedor> lista = fornecedorRepository.findAll(Sort.by("nome"));
         Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
         return lista.stream()
                 .map(f -> toResponse(f, nomes))

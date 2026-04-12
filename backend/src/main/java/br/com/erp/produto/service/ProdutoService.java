@@ -3,6 +3,7 @@ package br.com.erp.produto.service;
 import br.com.erp.audit.AuditoriaService;
 import br.com.erp.categoria.entity.Categoria;
 import br.com.erp.categoria.repository.CategoriaRepository;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.produto.dto.ProdutoRequest;
 import br.com.erp.produto.dto.ProdutoResumoResponse;
 import br.com.erp.produto.dto.ProdutoResponse;
@@ -10,6 +11,9 @@ import br.com.erp.produto.dto.RelatorioEstoqueItemResponse;
 import br.com.erp.produto.dto.StatusEstoque;
 import br.com.erp.produto.entity.Produto;
 import br.com.erp.produto.repository.ProdutoRepository;
+import br.com.erp.produto.spec.ProdutoSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +43,18 @@ public class ProdutoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProdutoResponse> listarTodos() {
-        List<Produto> lista = produtoRepository.findAll();
-        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
-        return lista.stream()
-                .map(p -> toResponse(p, nomes))
-                .toList();
+    public PageResponse<ProdutoResponse> listarPaginado(
+            Pageable pageable,
+            String q,
+            Long categoriaId,
+            Boolean ativo
+    ) {
+        Page<Produto> page = produtoRepository.findAll(
+                ProdutoSpecifications.comFiltros(q, categoriaId, ativo),
+                pageable
+        );
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(page.getContent());
+        return PageResponse.from(page.map(p -> toResponse(p, nomes)));
     }
 
     public ProdutoResumoResponse resumo() {

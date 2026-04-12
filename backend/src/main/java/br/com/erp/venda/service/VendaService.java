@@ -6,6 +6,7 @@ import br.com.erp.auditoria.AuditoriaHistoricoModulos;
 import br.com.erp.auditoria.service.AuditoriaHistoricoService;
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.cliente.repository.ClienteRepository;
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.estoque.TipoMovimentacaoEstoque;
 import br.com.erp.estoque.dto.MovimentacaoEstoqueRequest;
 import br.com.erp.estoque.service.MovimentacaoEstoqueService;
@@ -17,17 +18,17 @@ import br.com.erp.venda.dto.*;
 import br.com.erp.venda.entity.Venda;
 import br.com.erp.venda.entity.VendaItem;
 import br.com.erp.venda.repository.VendaRepository;
+import br.com.erp.venda.spec.VendaSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class VendaService {
@@ -59,31 +60,18 @@ public class VendaService {
     }
 
     @Transactional(readOnly = true)
-    public List<VendaListItemResponse> listar(
+    public PageResponse<VendaListItemResponse> listarPaginado(
+            Pageable pageable,
             Long clienteId,
             StatusVenda status,
             LocalDate startDate,
             LocalDate endDate
     ) {
-        Stream<Venda> stream = vendaRepository.findAllWithCliente().stream();
-
-        if (clienteId != null) {
-            stream = stream.filter(v -> Objects.equals(v.getCliente().getId(), clienteId));
-        }
-        if (status != null) {
-            stream = stream.filter(v -> v.getStatus() == status);
-        }
-
-        if (startDate != null) {
-            Instant start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-            stream = stream.filter(v -> !v.getDataVenda().isBefore(start));
-        }
-        if (endDate != null) {
-            Instant endExclusive = endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            stream = stream.filter(v -> v.getDataVenda().isBefore(endExclusive));
-        }
-
-        return stream.map(this::toListItem).toList();
+        Page<Venda> page = vendaRepository.findAll(
+                VendaSpecifications.comFiltros(clienteId, status, startDate, endDate),
+                pageable
+        );
+        return PageResponse.from(page.map(this::toListItem));
     }
 
     @Transactional(readOnly = true)

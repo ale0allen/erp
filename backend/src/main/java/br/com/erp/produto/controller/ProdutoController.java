@@ -1,5 +1,6 @@
 package br.com.erp.produto.controller;
 
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.produto.dto.ProdutoRequest;
 import br.com.erp.produto.dto.ProdutoResumoResponse;
 import br.com.erp.produto.dto.ProdutoResponse;
@@ -7,6 +8,9 @@ import br.com.erp.produto.dto.RelatorioEstoqueItemResponse;
 import br.com.erp.produto.dto.StatusEstoque;
 import br.com.erp.produto.service.ProdutoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +27,13 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<ProdutoResponse> listar() {
-        return produtoService.listarTodos();
+    public PageResponse<ProdutoResponse> listar(
+            @PageableDefault(size = 20, sort = "codigo", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Boolean ativo
+    ) {
+        return produtoService.listarPaginado(pageable, q, categoriaId, ativo);
     }
 
     @GetMapping("/resumo")

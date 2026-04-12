@@ -1,15 +1,18 @@
 package br.com.erp.financeiro.controller;
 
+import br.com.erp.common.dto.PageResponse;
 import br.com.erp.financeiro.StatusContaReceber;
 import br.com.erp.financeiro.dto.ContaReceberDetailResponse;
 import br.com.erp.financeiro.dto.ContaReceberListItemResponse;
 import br.com.erp.financeiro.dto.ContaReceberRequest;
 import br.com.erp.financeiro.service.ContaReceberService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/contas-receber")
@@ -22,14 +25,22 @@ public class ContaReceberController {
     }
 
     @GetMapping
-    public List<ContaReceberListItemResponse> listar(
+    public PageResponse<ContaReceberListItemResponse> listar(
+            @PageableDefault(size = 20, sort = "dataVencimento", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) StatusContaReceber status,
             @RequestParam(required = false) LocalDate startDueDate,
             @RequestParam(required = false) LocalDate endDueDate,
             @RequestParam(required = false) String description
     ) {
-        return contaReceberService.listar(customerId, status, startDueDate, endDueDate, description);
+        return contaReceberService.listarPaginado(
+                pageable,
+                customerId,
+                status,
+                startDueDate,
+                endDueDate,
+                description
+        );
     }
 
     @GetMapping("/{id}")

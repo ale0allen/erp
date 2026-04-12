@@ -3,7 +3,11 @@ package br.com.erp.cliente.controller;
 import br.com.erp.cliente.dto.ClienteRequest;
 import br.com.erp.cliente.dto.ClienteResponse;
 import br.com.erp.cliente.service.ClienteService;
+import br.com.erp.common.dto.PageResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +24,17 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<ClienteResponse> listar() {
-        return clienteService.listarTodos();
+    public PageResponse<ClienteResponse> listar(
+            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Boolean ativo
+    ) {
+        return clienteService.listarPaginado(pageable, q, ativo);
+    }
+
+    @GetMapping("/todas")
+    public List<ClienteResponse> listarTodas() {
+        return clienteService.listarTodas();
     }
 
     @GetMapping("/{id}")

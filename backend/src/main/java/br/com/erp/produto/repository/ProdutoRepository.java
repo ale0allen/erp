@@ -1,12 +1,20 @@
 package br.com.erp.produto.repository;
 
 import br.com.erp.produto.entity.Produto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 
-public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+public interface ProdutoRepository extends JpaRepository<Produto, Long>, JpaSpecificationExecutor<Produto> {
+
+    @EntityGraph(attributePaths = "categoria")
+    @Override
+    Page<Produto> findAll(Specification<Produto> spec, Pageable pageable);
 
     @Query("SELECT p FROM Produto p JOIN FETCH p.categoria ORDER BY p.codigo ASC")
     List<Produto> findAllWithCategoria();
