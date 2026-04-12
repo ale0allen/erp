@@ -1,7 +1,8 @@
+import { apiFetch } from '../../api/http'
+
 import type { RelatorioEstoqueFiltros, RelatorioEstoqueItem } from './relatorioEstoque.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-fetch(`${API_BASE}/produtos/relatorio-estoque`)
 
 export async function fetchRelatorioEstoque(
   filtros: RelatorioEstoqueFiltros = {}
@@ -24,7 +25,7 @@ export async function fetchRelatorioEstoque(
   const qs = params.toString()
   const url = qs ? `${API_BASE}/produtos/relatorio-estoque?${qs}` : `${API_BASE}/produtos/relatorio-estoque`
 
-  const response = await fetch(url)
+  const response = await apiFetch(url)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar relatório de estoque. Status: ${response.status}`)

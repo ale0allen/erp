@@ -1,5 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
+import { logout } from '../auth/auth'
+
 import './MainLayout.css'
 
 const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
@@ -71,7 +73,16 @@ export function MainLayout() {
       <div className="app-shell__main">
         <header className="app-shell__header">
           <h1 className="app-shell__header-title">{getHeaderTitle(pathname)}</h1>
-          <span className="app-shell__header-meta">Ambiente local</span>
+          <div className="app-shell__header-actions">
+            <span className="app-shell__header-meta">Ambiente local</span>
+            <button
+              type="button"
+              className="btn btn--secondary btn--small app-shell__logout"
+              onClick={() => logout()}
+            >
+              Sair
+            </button>
+          </div>
         </header>
         <main className="app-shell__content">
           <Outlet />

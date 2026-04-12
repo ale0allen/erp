@@ -1,10 +1,11 @@
+import { apiFetch } from '../../api/http'
+
 import type { Fornecedor, FornecedorPayload } from './fornecedor.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-fetch(`${API_BASE}/fornecedores`)
 
 export async function fetchFornecedores(): Promise<Fornecedor[]> {
-  const response = await fetch(`${API_BASE}/fornecedores`)
+  const response = await apiFetch(`${API_BASE}/fornecedores`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar fornecedores. Status: ${response.status}`)
@@ -14,7 +15,7 @@ export async function fetchFornecedores(): Promise<Fornecedor[]> {
 }
 
 export async function criarFornecedor(payload: FornecedorPayload): Promise<Fornecedor> {
-  const response = await fetch(`${API_BASE}/fornecedores`, {
+  const response = await apiFetch(`${API_BASE}/fornecedores`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -31,7 +32,7 @@ export async function atualizarFornecedor(
   id: number,
   payload: FornecedorPayload
 ): Promise<Fornecedor> {
-  const response = await fetch(`${API_BASE}/fornecedores/${id}`, {
+  const response = await apiFetch(`${API_BASE}/fornecedores/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -45,7 +46,7 @@ export async function atualizarFornecedor(
 }
 
 export async function removerFornecedor(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/fornecedores/${id}`, { method: 'DELETE' })
+  const response = await apiFetch(`${API_BASE}/fornecedores/${id}`, { method: 'DELETE' })
 
   if (!response.ok) {
     throw new Error(`Erro ao excluir fornecedor. Status: ${response.status}`)

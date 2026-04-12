@@ -1,3 +1,5 @@
+import { apiFetch } from '../../api/http'
+
 import type {
   RelatorioContasPagarResponse,
   RelatorioContasReceberResponse,
@@ -7,11 +9,7 @@ import type {
 
 const API_PAGAR = import.meta.env.VITE_API_URL
 
-fetch(`${API_PAGAR}/financeiro/relatorios/contas-pagar`)
-
 const API_RECEBER = import.meta.env.VITE_API_URL
-
-fetch(`${API_RECEBER}/financeiro/relatorios/contas-receber`)
 
 function paramsPagar(f: RelatorioFinanceiroFiltrosPagar): URLSearchParams {
   const params = new URLSearchParams()
@@ -38,7 +36,7 @@ export async function fetchRelatorioContasPagar(
 ): Promise<RelatorioContasPagarResponse> {
   const qs = paramsPagar(filtros).toString()
   const url = qs ? `${API_PAGAR}/financeiro/relatorios/contas-pagar?${qs}` : `${API_PAGAR}/financeiro/relatorios/contas-pagar`
-  const response = await fetch(url)
+  const response = await apiFetch(url)
   if (!response.ok) {
     throw new Error(`Erro ao carregar relatório de contas a pagar. Status: ${response.status}`)
   }
@@ -50,7 +48,7 @@ export async function fetchRelatorioContasReceber(
 ): Promise<RelatorioContasReceberResponse> {
   const qs = paramsReceber(filtros).toString()
   const url = qs ? `${API_RECEBER}/financeiro/relatorios/contas-receber?${qs}` : `${API_RECEBER}/financeiro/relatorios/contas-receber`
-  const response = await fetch(url)
+  const response = await apiFetch(url)
   if (!response.ok) {
     throw new Error(`Erro ao carregar relatório de contas a receber. Status: ${response.status}`)
   }

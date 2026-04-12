@@ -1,10 +1,11 @@
+import { apiFetch } from '../../api/http'
+
 import type { Produto, ProdutoPayload, ProdutoResumo } from './produto.types'
 
 const API_BASE = import.meta.env.VITE_API_URL
-fetch(`${API_BASE}/produtos`)
 
 export async function fetchProdutoResumo(): Promise<ProdutoResumo> {
-  const response = await fetch(`${API_BASE}/produtos/resumo`)
+  const response = await apiFetch(`${API_BASE}/produtos/resumo`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar resumo de produtos. Status: ${response.status}`)
@@ -14,7 +15,7 @@ export async function fetchProdutoResumo(): Promise<ProdutoResumo> {
 }
 
 export async function fetchProdutos(): Promise<Produto[]> {
-  const response = await fetch(`${API_BASE}/produtos`)
+  const response = await apiFetch(`${API_BASE}/produtos`)
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar produtos. Status: ${response.status}`)
@@ -28,7 +29,7 @@ export async function criarProduto(produto: ProdutoPayload): Promise<Produto> {
   const url = `${API_BASE}/produtos`
   console.log('POST', url, 'body:', produto)
 
-  const response = await fetch(url, {
+  const response = await apiFetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -54,7 +55,7 @@ export async function atualizarProduto(
   const url = `${API_BASE}/produtos/${id}`
   console.log('PUT', url, 'body:', produto)
 
-  const response = await fetch(url, {
+  const response = await apiFetch(url, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -77,7 +78,7 @@ export async function removerProduto(id: number): Promise<void> {
   const url = `${API_BASE}/produtos/${id}`
   console.log('DELETE', url)
 
-  const response = await fetch(url, { method: 'DELETE' })
+  const response = await apiFetch(url, { method: 'DELETE' })
   console.log('DELETE', url, 'status:', response.status)
 
   if (!response.ok) {
