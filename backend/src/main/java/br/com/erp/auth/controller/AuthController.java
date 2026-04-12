@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private static final String MSG_BOOTSTRAP_SUCESSO = "Setup inicial concluído. Este endpoint deixa de aceitar novas solicitações. "
+            + "Use POST /auth/login com o e-mail ou nome de usuário e a senha definidos. "
+            + "Recomenda-se alterar a senha após o primeiro acesso.";
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -26,9 +30,13 @@ public class AuthController {
         return authService.usuarioAtual(authentication);
     }
 
+    /**
+     * Setup inicial (somente se ainda não existir nenhum usuário). Bloqueado após o primeiro cadastro (HTTP 409).
+     */
     @PostMapping("/bootstrap")
-    public UsuarioResponse bootstrap(@Valid @RequestBody BootstrapRequest request) {
-        return authService.bootstrap(request);
+    public BootstrapCreatedResponse bootstrap(@Valid @RequestBody BootstrapRequest request) {
+        UsuarioResponse usuario = authService.bootstrap(request);
+        return new BootstrapCreatedResponse(usuario, MSG_BOOTSTRAP_SUCESSO);
     }
 
     @GetMapping("/bootstrap-status")

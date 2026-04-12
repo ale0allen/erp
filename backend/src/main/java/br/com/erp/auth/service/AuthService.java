@@ -66,12 +66,16 @@ public class AuthService {
         );
     }
 
+    /**
+     * Setup inicial único: cria o primeiro usuário somente se a tabela estiver vazia.
+     * Bloqueado após o primeiro cadastro — use {@link #login(LoginRequest)}.
+     */
     @Transactional
     public UsuarioResponse bootstrap(BootstrapRequest request) {
         if (usuarioRepository.count() > 0) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "O primeiro usuário já foi criado. Use o login."
+                    "Setup inicial já foi concluído. O primeiro usuário existe; use POST /auth/login."
             );
         }
 
@@ -106,6 +110,12 @@ public class AuthService {
     }
 
     public BootstrapStatusResponse bootstrapStatus() {
-        return new BootstrapStatusResponse(usuarioRepository.count() == 0);
+        boolean disponivel = usuarioRepository.count() == 0;
+        String instrucao = disponivel
+                ? "Nenhum usuário cadastrado. Envie POST /auth/bootstrap com corpo JSON: "
+                + "{ \"nome\", \"email\", \"username\" (opcional), \"password\" (mín. 6 caracteres) } "
+                + "ou defina BOOTSTRAP_ADMIN_PASSWORD e BOOTSTRAP_AUTO_CREATE=true para criar na inicialização."
+                : "Já existe pelo menos um usuário. Autentique-se com POST /auth/login.";
+        return new BootstrapStatusResponse(disponivel, instrucao);
     }
 }
