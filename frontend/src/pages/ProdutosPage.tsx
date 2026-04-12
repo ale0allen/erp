@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 
 import { useAuth } from '../auth/AuthContext'
 import { podeGerenciarCadastros } from '../auth/permissions'
@@ -30,6 +32,11 @@ export function ProdutosPage() {
   const [categoriaId, setCategoriaId] = useState('')
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [mensagem, setMensagem] = useState('')
+
+  const produtoEmEdicao = useMemo(
+    () => (editandoId != null ? produtos.find(p => p.id === editandoId) : undefined),
+    [editandoId, produtos]
+  )
 
   const carregarCategorias = async () => {
     try {
@@ -201,6 +208,12 @@ export function ProdutosPage() {
             <h3 id="form-produto-heading" className="card__title">
               {editandoId != null ? 'Editar produto' : 'Novo produto'}
             </h3>
+            {editandoId != null && produtoEmEdicao?.auditoria != null ? (
+              <AuditoriaMeta
+                auditoria={produtoEmEdicao.auditoria}
+                titulo="Auditoria do produto"
+              />
+            ) : null}
             <ProdutoForm
               editandoId={editandoId}
               categorias={categorias}

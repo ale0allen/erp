@@ -1,5 +1,7 @@
 package br.com.erp.fornecedor.dto;
 
+import br.com.erp.audit.dto.AuditoriaResponse;
+
 public record FornecedorResponse(
         Long id,
         String nome,
@@ -8,6 +10,7 @@ public record FornecedorResponse(
         String telefone,
         String nomeContato,
         Boolean ativo,
-        String observacoes
+        String observacoes,
+        AuditoriaResponse auditoria
 ) {}
 

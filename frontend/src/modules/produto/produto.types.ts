@@ -1,3 +1,5 @@
+import type { Auditoria } from '../../types/audit.types'
+
 export type Produto = {
   id: number
   codigo: string
@@ -10,6 +12,7 @@ export type Produto = {
   saldoEstoque: number
   estoqueMinimo: number
   statusEstoque: StatusEstoque
+  auditoria?: Auditoria | null
 }
 
 export type StatusEstoque = 'OUT_OF_STOCK' | 'LOW_STOCK' | 'NORMAL'

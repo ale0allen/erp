@@ -1,5 +1,6 @@
 package br.com.erp.cliente.entity;
 
+import br.com.erp.audit.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 @Table(name = "cliente")
 @Getter
 @Setter
-public class Cliente {
+public class Cliente extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

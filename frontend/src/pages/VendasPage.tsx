@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 import { fetchClientes } from '../modules/cliente/clienteService'
 import type { Cliente } from '../modules/cliente/cliente.types'
 import { fetchProdutos } from '../modules/produto/produtoService'
@@ -18,6 +19,7 @@ import {
   fetchVendas,
   finalizarVenda
 } from '../modules/venda/vendaService'
+import type { Auditoria } from '../types/audit.types'
 import '../styles/compras.css'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
@@ -66,6 +68,7 @@ export function VendasPage() {
   const [mensagem, setMensagem] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [contaReceberId, setContaReceberId] = useState<number | null>(null)
+  const [auditoriaVenda, setAuditoriaVenda] = useState<Auditoria | null>(null)
 
   const carregar = async () => {
     setCarregando(true)
@@ -127,6 +130,7 @@ export function VendasPage() {
     setItens([])
     setMensagem('')
     setContaReceberId(null)
+    setAuditoriaVenda(null)
     setClienteId(clientes[0] ? String(clientes[0].id) : '')
   }
 
@@ -137,6 +141,7 @@ export function VendasPage() {
     setDataVenda(detalhe.dataVenda.slice(0, 10))
     setObservacoes(detalhe.observacoes ?? '')
     setContaReceberId(detalhe.contaReceberId ?? null)
+    setAuditoriaVenda(detalhe.auditoria ?? null)
     setItens(
       (detalhe.itens ?? []).map(i => ({
         produtoId: String(i.produtoId),
@@ -286,6 +291,10 @@ export function VendasPage() {
                 Conta a receber #{contaReceberId} gerada para esta venda.
               </p>
             )}
+
+            {editandoId != null && auditoriaVenda != null ? (
+              <AuditoriaMeta auditoria={auditoriaVenda} titulo="Auditoria da venda" />
+            ) : null}
 
             <form className="produto-form" onSubmit={salvar}>
               <div className="form-field">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 import { fetchFornecedores } from '../modules/fornecedor/fornecedorService'
 import type { Fornecedor } from '../modules/fornecedor/fornecedor.types'
 import { fetchProdutos } from '../modules/produto/produtoService'
@@ -18,6 +19,7 @@ import {
   fetchCompras,
   finalizarCompra
 } from '../modules/compra/compraService'
+import type { Auditoria } from '../types/audit.types'
 import '../styles/compras.css'
 import { getStatusMessageClass } from '../utils/statusMessage'
 
@@ -66,6 +68,7 @@ export function ComprasPage() {
   const [mensagem, setMensagem] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [contaPagarId, setContaPagarId] = useState<number | null>(null)
+  const [auditoriaCompra, setAuditoriaCompra] = useState<Auditoria | null>(null)
 
   const carregar = async () => {
     setCarregando(true)
@@ -132,6 +135,7 @@ export function ComprasPage() {
     setItens([])
     setMensagem('')
     setContaPagarId(null)
+    setAuditoriaCompra(null)
     setFornecedorId(fornecedores[0] ? String(fornecedores[0].id) : '')
   }
 
@@ -154,6 +158,7 @@ export function ComprasPage() {
     setDataCompra(detalhe.dataCompra.slice(0, 10))
     setObservacoes(detalhe.observacoes ?? '')
     setContaPagarId(detalhe.contaPagarId ?? null)
+    setAuditoriaCompra(detalhe.auditoria ?? null)
     setItens(
       (detalhe.itens ?? []).map(i => ({
         produtoId: String(i.produtoId),
@@ -294,6 +299,10 @@ export function ComprasPage() {
                 Conta a pagar #{contaPagarId} gerada para esta compra.
               </p>
             )}
+
+            {editandoId != null && auditoriaCompra != null ? (
+              <AuditoriaMeta auditoria={auditoriaCompra} titulo="Auditoria da compra" />
+            ) : null}
 
             <form className="produto-form" onSubmit={salvar}>
               <div className="form-field">

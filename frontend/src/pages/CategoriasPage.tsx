@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 
 import { useAuth } from '../auth/AuthContext'
 import { podeGerenciarCadastros } from '../auth/permissions'
@@ -22,6 +24,11 @@ export function CategoriasPage() {
   const [ativo, setAtivo] = useState(true)
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [mensagem, setMensagem] = useState('')
+
+  const categoriaEmEdicao = useMemo(
+    () => (editandoId != null ? categorias.find(c => c.id === editandoId) : undefined),
+    [editandoId, categorias]
+  )
 
   const carregarCategorias = async () => {
     try {
@@ -130,6 +137,12 @@ export function CategoriasPage() {
             <h3 id="form-categoria-heading" className="card__title">
               {editandoId != null ? 'Editar categoria' : 'Nova categoria'}
             </h3>
+            {editandoId != null && categoriaEmEdicao?.auditoria != null ? (
+              <AuditoriaMeta
+                auditoria={categoriaEmEdicao.auditoria}
+                titulo="Auditoria da categoria"
+              />
+            ) : null}
             <CategoriaForm
               editandoId={editandoId}
               nome={nome}

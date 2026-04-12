@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 
 import { useAuth } from '../auth/AuthContext'
 import { podeGerenciarCadastros } from '../auth/permissions'
@@ -27,6 +29,11 @@ export function ClientesPage() {
   const [observacoes, setObservacoes] = useState('')
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [mensagem, setMensagem] = useState('')
+
+  const clienteEmEdicao = useMemo(
+    () => (editandoId != null ? clientes.find(c => c.id === editandoId) : undefined),
+    [editandoId, clientes]
+  )
 
   const carregarClientes = async () => {
     try {
@@ -142,6 +149,12 @@ export function ClientesPage() {
             <h3 id="form-cliente-heading" className="card__title">
               {editandoId != null ? 'Editar cliente' : 'Novo cliente'}
             </h3>
+            {editandoId != null && clienteEmEdicao?.auditoria != null ? (
+              <AuditoriaMeta
+                auditoria={clienteEmEdicao.auditoria}
+                titulo="Auditoria do cliente"
+              />
+            ) : null}
             <ClienteForm
               editandoId={editandoId}
               nome={nome}

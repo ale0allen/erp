@@ -1,5 +1,6 @@
 package br.com.erp.compra.dto;
 
+import br.com.erp.audit.dto.AuditoriaResponse;
 import br.com.erp.compra.StatusCompra;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public record CompraDetailResponse(
         String observacoes,
         BigDecimal valorTotal,
         List<CompraItemResponse> itens,
-        Long contaPagarId
+        Long contaPagarId,
+        AuditoriaResponse auditoria
 ) {}
 

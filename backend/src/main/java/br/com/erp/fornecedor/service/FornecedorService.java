@@ -1,5 +1,6 @@
 package br.com.erp.fornecedor.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.fornecedor.dto.FornecedorRequest;
 import br.com.erp.fornecedor.dto.FornecedorResponse;
 import br.com.erp.fornecedor.entity.Fornecedor;
@@ -10,20 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FornecedorService {
 
     private final FornecedorRepository fornecedorRepository;
+    private final AuditoriaService auditoriaService;
 
-    public FornecedorService(FornecedorRepository fornecedorRepository) {
+    public FornecedorService(FornecedorRepository fornecedorRepository, AuditoriaService auditoriaService) {
         this.fornecedorRepository = fornecedorRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
     public List<FornecedorResponse> listarTodos() {
-        return fornecedorRepository.findAll().stream()
-                .map(this::toResponse)
+        List<Fornecedor> lista = fornecedorRepository.findAll();
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
+        return lista.stream()
+                .map(f -> toResponse(f, nomes))
                 .toList();
     }
 
@@ -73,6 +79,10 @@ public class FornecedorService {
     }
 
     private FornecedorResponse toResponse(Fornecedor fornecedor) {
+        return toResponse(fornecedor, auditoriaService.carregarNomesParaEntidades(List.of(fornecedor)));
+    }
+
+    private FornecedorResponse toResponse(Fornecedor fornecedor, Map<Long, String> nomesPorId) {
         return new FornecedorResponse(
                 fornecedor.getId(),
                 fornecedor.getNome(),
@@ -81,7 +91,8 @@ public class FornecedorService {
                 fornecedor.getTelefone(),
                 fornecedor.getNomeContato(),
                 fornecedor.getAtivo(),
-                fornecedor.getObservacoes()
+                fornecedor.getObservacoes(),
+                auditoriaService.toResponse(fornecedor, nomesPorId)
         );
     }
 }

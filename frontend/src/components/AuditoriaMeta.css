@@ -1,0 +1,45 @@
+.auditoria-meta {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.auditoria-meta__title {
+  margin: 0 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.auditoria-meta__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 520px) {
+  .auditoria-meta__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auditoria-meta__pair {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.auditoria-meta__dt {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.auditoria-meta__dd {
+  color: #0f172a;
+}

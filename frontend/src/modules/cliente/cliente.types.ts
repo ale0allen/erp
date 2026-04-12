@@ -1,3 +1,5 @@
+import type { Auditoria } from '../../types/audit.types'
+
 export type Cliente = {
   id: number
   nome: string
@@ -7,6 +9,7 @@ export type Cliente = {
   nomeContato: string | null
   ativo: boolean
   observacoes: string | null
+  auditoria?: Auditoria | null
 }
 
 export type ClientePayload = {

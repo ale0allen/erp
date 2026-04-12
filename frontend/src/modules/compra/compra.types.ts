@@ -1,3 +1,5 @@
+import type { Auditoria } from '../../types/audit.types'
+
 export type StatusCompra = 'DRAFT' | 'COMPLETED' | 'CANCELLED'
 
 export type CompraItemPayload = {
@@ -41,5 +43,6 @@ export type CompraDetail = {
   itens: CompraItem[]
   /** Presente quando a compra foi finalizada e gerou conta a pagar */
   contaPagarId?: number | null
+  auditoria?: Auditoria | null
 }
 

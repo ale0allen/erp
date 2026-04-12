@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { AuditoriaMeta } from '../components/AuditoriaMeta'
 
 import { useAuth } from '../auth/AuthContext'
 import { podeGerenciarCadastros } from '../auth/permissions'
@@ -27,6 +29,11 @@ export function FornecedoresPage() {
   const [observacoes, setObservacoes] = useState('')
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [mensagem, setMensagem] = useState('')
+
+  const fornecedorEmEdicao = useMemo(
+    () => (editandoId != null ? fornecedores.find(f => f.id === editandoId) : undefined),
+    [editandoId, fornecedores]
+  )
 
   const carregarFornecedores = async () => {
     try {
@@ -140,6 +147,12 @@ export function FornecedoresPage() {
             <h3 id="form-fornecedor-heading" className="card__title">
               {editandoId != null ? 'Editar fornecedor' : 'Novo fornecedor'}
             </h3>
+            {editandoId != null && fornecedorEmEdicao?.auditoria != null ? (
+              <AuditoriaMeta
+                auditoria={fornecedorEmEdicao.auditoria}
+                titulo="Auditoria do fornecedor"
+              />
+            ) : null}
             <FornecedorForm
               editandoId={editandoId}
               nome={nome}

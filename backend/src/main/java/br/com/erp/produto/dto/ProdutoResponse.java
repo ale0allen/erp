@@ -1,5 +1,7 @@
 package br.com.erp.produto.dto;
 
+import br.com.erp.audit.dto.AuditoriaResponse;
+
 import java.math.BigDecimal;
 
 public record ProdutoResponse(
@@ -14,6 +16,7 @@ public record ProdutoResponse(
         String categoriaNome,
         Integer saldoEstoque,
         Integer estoqueMinimo,
-        StatusEstoque statusEstoque
+        StatusEstoque statusEstoque,
+        AuditoriaResponse auditoria
 
 ) {}

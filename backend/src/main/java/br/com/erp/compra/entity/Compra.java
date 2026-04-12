@@ -1,5 +1,6 @@
 package br.com.erp.compra.entity;
 
+import br.com.erp.audit.EntidadeAuditavel;
 import br.com.erp.compra.StatusCompra;
 import br.com.erp.fornecedor.entity.Fornecedor;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @Table(name = "compra")
 @Getter
 @Setter
-public class Compra {
+public class Compra extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

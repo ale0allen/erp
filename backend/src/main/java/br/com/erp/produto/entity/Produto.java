@@ -1,5 +1,6 @@
 package br.com.erp.produto.entity;
 
+import br.com.erp.audit.EntidadeAuditavel;
 import br.com.erp.categoria.entity.Categoria;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 @Table(name = "produto")
 @Getter
 @Setter
-public class Produto {
+public class Produto extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

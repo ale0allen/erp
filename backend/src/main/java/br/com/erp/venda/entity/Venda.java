@@ -1,5 +1,6 @@
 package br.com.erp.venda.entity;
 
+import br.com.erp.audit.EntidadeAuditavel;
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.venda.StatusVenda;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @Table(name = "venda")
 @Getter
 @Setter
-public class Venda {
+public class Venda extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package br.com.erp.categoria.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.categoria.dto.CategoriaRequest;
 import br.com.erp.categoria.dto.CategoriaResponse;
 import br.com.erp.categoria.entity.Categoria;
@@ -11,22 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
     private final ProdutoRepository produtoRepository;
+    private final AuditoriaService auditoriaService;
 
-    public CategoriaService(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository) {
+    public CategoriaService(
+            CategoriaRepository categoriaRepository,
+            ProdutoRepository produtoRepository,
+            AuditoriaService auditoriaService
+    ) {
         this.categoriaRepository = categoriaRepository;
         this.produtoRepository = produtoRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
     public List<CategoriaResponse> listarTodos() {
-        return categoriaRepository.findAll().stream()
-                .map(this::toResponse)
+        List<Categoria> lista = categoriaRepository.findAll();
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
+        return lista.stream()
+                .map(c -> toResponse(c, nomes))
                 .toList();
     }
 
@@ -66,6 +76,15 @@ public class CategoriaService {
     }
 
     private CategoriaResponse toResponse(Categoria categoria) {
-        return new CategoriaResponse(categoria.getId(), categoria.getNome(), categoria.getAtivo());
+        return toResponse(categoria, auditoriaService.carregarNomesParaEntidades(List.of(categoria)));
+    }
+
+    private CategoriaResponse toResponse(Categoria categoria, Map<Long, String> nomesPorId) {
+        return new CategoriaResponse(
+                categoria.getId(),
+                categoria.getNome(),
+                categoria.getAtivo(),
+                auditoriaService.toResponse(categoria, nomesPorId)
+        );
     }
 }

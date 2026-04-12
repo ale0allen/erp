@@ -1,5 +1,6 @@
 package br.com.erp.cliente.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.cliente.dto.ClienteRequest;
 import br.com.erp.cliente.dto.ClienteResponse;
 import br.com.erp.cliente.entity.Cliente;
@@ -10,20 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final AuditoriaService auditoriaService;
 
-    public ClienteService(ClienteRepository clienteRepository) {
+    public ClienteService(ClienteRepository clienteRepository, AuditoriaService auditoriaService) {
         this.clienteRepository = clienteRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
     public List<ClienteResponse> listarTodos() {
-        return clienteRepository.findAll().stream()
-                .map(this::toResponse)
+        List<Cliente> lista = clienteRepository.findAll();
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
+        return lista.stream()
+                .map(c -> toResponse(c, nomes))
                 .toList();
     }
 
@@ -73,6 +79,10 @@ public class ClienteService {
     }
 
     private ClienteResponse toResponse(Cliente cliente) {
+        return toResponse(cliente, auditoriaService.carregarNomesParaEntidades(List.of(cliente)));
+    }
+
+    private ClienteResponse toResponse(Cliente cliente, Map<Long, String> nomesPorId) {
         return new ClienteResponse(
                 cliente.getId(),
                 cliente.getNome(),
@@ -81,7 +91,8 @@ public class ClienteService {
                 cliente.getTelefone(),
                 cliente.getNomeContato(),
                 cliente.getAtivo(),
-                cliente.getObservacoes()
+                cliente.getObservacoes(),
+                auditoriaService.toResponse(cliente, nomesPorId)
         );
     }
 }

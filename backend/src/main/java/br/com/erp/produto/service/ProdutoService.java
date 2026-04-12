@@ -1,5 +1,6 @@
 package br.com.erp.produto.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.categoria.entity.Categoria;
 import br.com.erp.categoria.repository.CategoriaRepository;
 import br.com.erp.produto.dto.ProdutoRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -24,17 +26,24 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final CategoriaRepository categoriaRepository;
+    private final AuditoriaService auditoriaService;
 
-    public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository) {
+    public ProdutoService(
+            ProdutoRepository produtoRepository,
+            CategoriaRepository categoriaRepository,
+            AuditoriaService auditoriaService
+    ) {
         this.produtoRepository = produtoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
     public List<ProdutoResponse> listarTodos() {
-        return produtoRepository.findAll()
-                .stream()
-                .map(this::toResponse)
+        List<Produto> lista = produtoRepository.findAll();
+        Map<Long, String> nomes = auditoriaService.carregarNomesParaEntidades(lista);
+        return lista.stream()
+                .map(p -> toResponse(p, nomes))
                 .toList();
     }
 
@@ -166,6 +175,10 @@ public class ProdutoService {
     }
 
     private ProdutoResponse toResponse(Produto produto) {
+        return toResponse(produto, auditoriaService.carregarNomesParaEntidades(List.of(produto)));
+    }
+
+    private ProdutoResponse toResponse(Produto produto, Map<Long, String> nomesPorId) {
         Categoria categoria = produto.getCategoria();
         int saldo = produto.getSaldoEstoque() != null ? produto.getSaldoEstoque() : 0;
         int minimo = produto.getEstoqueMinimo() != null ? produto.getEstoqueMinimo() : 0;
@@ -181,7 +194,8 @@ public class ProdutoService {
                 categoria.getNome(),
                 saldo,
                 minimo,
-                status
+                status,
+                auditoriaService.toResponse(produto, nomesPorId)
         );
     }
 

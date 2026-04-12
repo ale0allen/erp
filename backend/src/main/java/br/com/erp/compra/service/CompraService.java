@@ -1,5 +1,6 @@
 package br.com.erp.compra.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.compra.StatusCompra;
 import br.com.erp.compra.dto.*;
 import br.com.erp.compra.entity.Compra;
@@ -33,19 +34,22 @@ public class CompraService {
     private final ProdutoRepository produtoRepository;
     private final MovimentacaoEstoqueService movimentacaoEstoqueService;
     private final ContaPagarService contaPagarService;
+    private final AuditoriaService auditoriaService;
 
     public CompraService(
             CompraRepository compraRepository,
             FornecedorRepository fornecedorRepository,
             ProdutoRepository produtoRepository,
             MovimentacaoEstoqueService movimentacaoEstoqueService,
-            ContaPagarService contaPagarService
+            ContaPagarService contaPagarService,
+            AuditoriaService auditoriaService
     ) {
         this.compraRepository = compraRepository;
         this.fornecedorRepository = fornecedorRepository;
         this.produtoRepository = produtoRepository;
         this.movimentacaoEstoqueService = movimentacaoEstoqueService;
         this.contaPagarService = contaPagarService;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
@@ -256,7 +260,8 @@ public class CompraService {
                 compra.getObservacoes(),
                 compra.getValorTotal(),
                 itens,
-                contaPagarId
+                contaPagarId,
+                auditoriaService.toResponse(compra)
         );
     }
 }

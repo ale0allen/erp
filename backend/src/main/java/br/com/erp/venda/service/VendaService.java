@@ -1,5 +1,6 @@
 package br.com.erp.venda.service;
 
+import br.com.erp.audit.AuditoriaService;
 import br.com.erp.cliente.entity.Cliente;
 import br.com.erp.cliente.repository.ClienteRepository;
 import br.com.erp.estoque.TipoMovimentacaoEstoque;
@@ -33,19 +34,22 @@ public class VendaService {
     private final ProdutoRepository produtoRepository;
     private final MovimentacaoEstoqueService movimentacaoEstoqueService;
     private final ContaReceberService contaReceberService;
+    private final AuditoriaService auditoriaService;
 
     public VendaService(
             VendaRepository vendaRepository,
             ClienteRepository clienteRepository,
             ProdutoRepository produtoRepository,
             MovimentacaoEstoqueService movimentacaoEstoqueService,
-            ContaReceberService contaReceberService
+            ContaReceberService contaReceberService,
+            AuditoriaService auditoriaService
     ) {
         this.vendaRepository = vendaRepository;
         this.clienteRepository = clienteRepository;
         this.produtoRepository = produtoRepository;
         this.movimentacaoEstoqueService = movimentacaoEstoqueService;
         this.contaReceberService = contaReceberService;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional(readOnly = true)
@@ -272,7 +276,8 @@ public class VendaService {
                 venda.getObservacoes(),
                 venda.getValorTotal(),
                 itens,
-                contaReceberId
+                contaReceberId,
+                auditoriaService.toResponse(venda)
         );
     }
 }
