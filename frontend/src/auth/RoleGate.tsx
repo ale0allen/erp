@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 
+import { AccessDeniedPage } from '../pages/AccessDeniedPage'
 import { useAuth } from './AuthContext'
 import type { Perfil } from './auth.types'
 import { hasAlgumPerfil } from './permissions'
@@ -36,7 +37,8 @@ export function RoleGate({ perfis, children }: RoleGateProps) {
   }
 
   if (!hasAlgumPerfil(user, ...perfis)) {
-    return <Navigate to="/acesso-negado" replace />
+    /* Conteúdo explícito no Outlet (evita depender só de redirect para /acesso-negado). */
+    return <AccessDeniedPage />
   }
 
   return <>{children}</>
