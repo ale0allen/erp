@@ -1,0 +1,50 @@
+/* Página de gestão de usuários (admin) */
+
+.usuarios__status {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.usuarios__status--ativo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.usuarios__status--inativo {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.usuarios__perfis-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usuarios__perfil-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #334155;
+}
+
+.usuarios__table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .usuarios__table-wrap {
+    overflow-x: auto;
+  }
+}

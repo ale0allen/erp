@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/contas-receber', label: 'Contas a receber' },
   { to: '/financeiro', label: 'Dashboard financeiro' },
   { to: '/relatorio-financeiro', label: 'Relatório financeiro' },
+  { to: '/usuarios', label: 'Usuários' },
   { to: '/configuracoes', label: 'Configurações' }
 ]
 
@@ -34,7 +35,7 @@ const FINANCE_PATHS = new Set([
 
 function navItemVisivel(path: string, user: ReturnType<typeof useAuth>['user']): boolean {
   if (!user) return false
-  if (path === '/configuracoes') return isAdmin(user)
+  if (path === '/usuarios' || path === '/configuracoes') return isAdmin(user)
   if (FINANCE_PATHS.has(path)) return podeAcessarFinanceiro(user)
   return true
 }
@@ -53,6 +54,7 @@ const PATH_TITLES: Record<string, string> = {
   '/contas-receber': 'Contas a receber',
   '/financeiro': 'Dashboard financeiro',
   '/relatorio-financeiro': 'Relatório financeiro',
+  '/usuarios': 'Usuários',
   '/configuracoes': 'Configurações',
   '/acesso-negado': 'Acesso negado'
 }

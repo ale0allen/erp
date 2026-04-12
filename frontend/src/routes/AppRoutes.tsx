@@ -6,6 +6,7 @@ import { LoginPage } from '../pages/LoginPage'
 import { AccessDeniedPage } from '../pages/AccessDeniedPage'
 import { CategoriasPage } from '../pages/CategoriasPage'
 import { ConfiguracoesPage } from '../pages/ConfiguracoesPage'
+import { UsuariosPage } from '../pages/UsuariosPage'
 import { DashboardPage } from '../pages/DashboardPage'
 import { EstoquePage } from '../pages/EstoquePage'
 import { FinanceiroPage } from '../pages/FinanceiroPage'
@@ -65,6 +66,14 @@ export function AppRoutes() {
             element={
               <RoleGate perfis={['ADMIN', 'MANAGER']}>
                 <RelatorioFinanceiroPage />
+              </RoleGate>
+            }
+          />
+          <Route
+            path="/usuarios"
+            element={
+              <RoleGate perfis={['ADMIN']}>
+                <UsuariosPage />
               </RoleGate>
             }
           />

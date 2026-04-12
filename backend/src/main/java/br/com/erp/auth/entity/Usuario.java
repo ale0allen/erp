@@ -1,5 +1,6 @@
 package br.com.erp.auth.entity;
 
+import br.com.erp.audit.EntidadeAuditavel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import java.util.Set;
 @Table(name = "usuario")
 @Getter
 @Setter
-public class Usuario {
+public class Usuario extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

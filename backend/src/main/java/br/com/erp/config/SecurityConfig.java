@@ -117,6 +117,12 @@ public class SecurityConfig {
                         .hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/categorias/**")
                         .hasAnyRole("ADMIN", "MANAGER", "OPERATOR")
+                        // Configurações globais: somente ADMIN
+                        .requestMatchers("/configuracao-sistema", "/configuracao-sistema/**")
+                        .hasRole("ADMIN")
+                        // Usuários e perfis: somente ADMIN
+                        .requestMatchers("/usuarios", "/usuarios/**", "/perfis", "/perfis/**")
+                        .hasRole("ADMIN")
                         .requestMatchers("/auth/me")
                         .hasAnyRole("ADMIN", "MANAGER", "OPERATOR")
                         .anyRequest().denyAll())
