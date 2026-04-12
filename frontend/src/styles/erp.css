@@ -1,7 +1,9 @@
 /* Conteúdo interno das páginas ERP (cards, formulários, tabelas) */
 #root {
   width: 100%;
+  max-width: 100%;
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .erp-page {
@@ -14,11 +16,13 @@
 }
 
 .erp-page__container {
+  box-sizing: border-box;
+  width: 100%;
   max-width: 56rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
 
 .erp-page__title {
@@ -378,13 +382,51 @@ textarea.form-input {
   border: 1px solid #86efac;
 }
 
+/* Colunas opcionais: ocultar em telas muito estreitas (scroll horizontal reduzido) */
+@media (max-width: 480px) {
+  .data-table__col--xs-hide {
+    display: none;
+  }
+}
+
+/* Paginação e grupos de ação em listas */
+.erp-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.erp-pagination__meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.erp-pagination__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 @media (max-width: 640px) {
   .card {
     padding: 1rem;
   }
 
+  .erp-page__title {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
   .data-table th,
   .data-table td {
     padding: 0.5rem 0.625rem;
+  }
+
+  .table-wrap {
+    margin-inline: -0.125rem;
+    padding-bottom: 0.25rem;
   }
 }

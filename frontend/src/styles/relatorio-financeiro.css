@@ -138,6 +138,12 @@
 
 @media (max-width: 720px) {
   .relatorio-fin__summary {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 400px) {
+  .relatorio-fin__summary {
+    grid-template-columns: 1fr;
   }
 }

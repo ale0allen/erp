@@ -374,11 +374,11 @@ export function UsuariosPage() {
           )}
 
           {!carregando && totalPages > 1 ? (
-            <div className="usuarios__paginacao" style={{ marginTop: '1rem' }}>
-              <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
+            <div className="usuarios__paginacao">
+              <p className="usuarios__paginacao-meta">
                 Página {page + 1} de {totalPages} ({totalElements} usuários)
-              </span>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              </p>
+              <div className="usuarios__paginacao-nav">
                 <button
                   type="button"
                   className="btn btn--secondary btn--small"

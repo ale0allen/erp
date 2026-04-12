@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
@@ -68,22 +69,71 @@ function getHeaderTitle(pathname: string): string {
 export function MainLayout() {
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
+  const [navAberto, setNavAberto] = useState(false)
 
   const itensVisiveis = NAV_ITEMS.filter(({ to }) => navItemVisivel(to, user))
 
+  useEffect(() => {
+    setNavAberto(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!navAberto) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setNavAberto(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navAberto])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const mq = window.matchMedia('(max-width: 1024px)')
+    const aplicarOverflow = () => {
+      if (mq.matches && navAberto) {
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = ''
+      }
+    }
+    aplicarOverflow()
+    mq.addEventListener('change', aplicarOverflow)
+    return () => {
+      mq.removeEventListener('change', aplicarOverflow)
+      document.body.style.overflow = ''
+    }
+  }, [navAberto])
+
   return (
-    <div className="app-shell">
-      <aside className="app-shell__sidebar" aria-label="Menu principal">
+    <div className={navAberto ? 'app-shell app-shell--nav-open' : 'app-shell'}>
+      <button
+        type="button"
+        className="app-shell__backdrop"
+        aria-label="Fechar menu"
+        aria-hidden={!navAberto}
+        tabIndex={navAberto ? 0 : -1}
+        onClick={() => setNavAberto(false)}
+      />
+
+      <aside
+        id="app-main-nav"
+        className="app-shell__sidebar"
+        aria-label="Menu principal"
+      >
         <div className="app-shell__brand">
           <p className="app-shell__brand-title">ERP</p>
           <p className="app-shell__brand-sub">Gestão</p>
         </div>
-        <nav className="app-shell__nav">
+        <nav className="app-shell__nav" aria-labelledby="app-main-nav-heading">
+          <span id="app-main-nav-heading" className="app-shell__nav-sr-title">
+            Navegação
+          </span>
           {itensVisiveis.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
+              onClick={() => setNavAberto(false)}
               className={({ isActive }) =>
                 isActive
                   ? 'app-shell__nav-link app-shell__nav-link--active'
@@ -98,6 +148,40 @@ export function MainLayout() {
 
       <div className="app-shell__main">
         <header className="app-shell__header">
+          <button
+            type="button"
+            className="app-shell__menu-toggle"
+            aria-expanded={navAberto}
+            aria-controls="app-main-nav"
+            onClick={() => setNavAberto(v => !v)}
+            aria-label={navAberto ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
+          >
+            <svg
+              className="app-shell__menu-icon"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+            >
+              {navAberto ? (
+                <path
+                  d="M18 6L6 18M6 6l12 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              ) : (
+                <path
+                  d="M4 7h16M4 12h16M4 17h16"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              )}
+            </svg>
+          </button>
           <h1 className="app-shell__header-title">{getHeaderTitle(pathname)}</h1>
           <div className="app-shell__header-actions">
             {user ? (

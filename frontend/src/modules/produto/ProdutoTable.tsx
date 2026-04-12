@@ -29,7 +29,9 @@ export function ProdutoTable({
       <table className="data-table">
         <thead>
           <tr>
-            <th scope="col">ID</th>
+            <th scope="col" className="data-table__col--xs-hide">
+              ID
+            </th>
             <th scope="col">Código</th>
             <th scope="col">Nome</th>
             <th scope="col" className="data-table__num">
@@ -59,7 +61,7 @@ export function ProdutoTable({
               calcularStatusEstoque(saldo, minimo)
             return (
               <tr key={produto.id}>
-                <td>{produto.id}</td>
+                <td className="data-table__col--xs-hide">{produto.id}</td>
                 <td>{produto.codigo}</td>
                 <td>{produto.nome}</td>
                 <td className="data-table__num data-table__saldo">
